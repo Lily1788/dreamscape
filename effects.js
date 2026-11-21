@@ -1,7 +1,7 @@
 'use strict';
 
 const DreamEffects = (() => {
-  const {clamp, distance, mix} = DreamGestures;
+  const {clamp, distance, mix, cardDuration} = DreamGestures;
   const slots = [
     [[.74,.44,.17,.17],['08-field-jump','09-gold-silhouettes','10-muted-scene']],
     [[.07,.25,.18,.18],['02-violet-wings','01-pink-sea','03-pink-trees','04-flower-field']],
@@ -208,7 +208,7 @@ const DreamEffects = (() => {
       }
       ctx.restore();
     }
-    frostEffect(s,t) {
+    frostEffect(s,t,portraitOnly,matte,fit,mirror) {
       const {ctx,w,h}=this, e=this.erase.getContext('2d'),c=this.frost.getContext('2d');
       for(const [a,b,size] of s.sweeps){
         const n=Math.max(1,Math.ceil(distance(a,b)/10));
@@ -219,13 +219,21 @@ const DreamEffects = (() => {
         }
       }
       s.sweeps.length=0;
+      if(portraitOnly&&!matte)return;
       c.clearRect(0,0,w,h);
-      c.save();c.filter='blur(10px)';c.drawImage(this.canvas,-12,-12,w+24,h+24);c.restore();
-      c.fillStyle='#e1e2e16b';c.fillRect(0,0,w,h);
+      if(portraitOnly){
+        c.save();c.filter='blur(3px)';c.drawImage(this.room,0,0);c.restore();
+        c.fillStyle='#e9effaba';c.fillRect(0,0,w,h);
+        c.globalCompositeOperation='destination-in';
+        this.camera(c,matte.white,fit,mirror);
+      }else{
+        c.save();c.filter='blur(10px)';c.drawImage(this.canvas,-12,-12,w+24,h+24);c.restore();
+        c.fillStyle='#e1e2e16b';c.fillRect(0,0,w,h);
+      }
       c.globalCompositeOperation='destination-out';c.drawImage(this.erase,0,0);
       c.globalCompositeOperation='source-over';
       const alpha=s.frostDelay?clamp((t-s.entered-s.frostDelay)/320,0,1):1;
-      ctx.save();ctx.globalAlpha=alpha;ctx.drawImage(this.frost,0,0);ctx.restore();
+      ctx.save();ctx.globalAlpha=alpha*(portraitOnly?.34:1);ctx.drawImage(this.frost,0,0);ctx.restore();
     }
     wing(s,t) {
       const {ctx,w,h}=this, image=get('wing-cutout'),f=s.face;
@@ -327,42 +335,31 @@ const DreamEffects = (() => {
     }
     windows(s,t) {
       const {ctx,w,h}=this;
-      const leave=s.phase===8?1-clamp((t-s.entered)/1120,0,1):1;
-      if(leave<=0)return;
-      for(const [i,card] of s.cards.entries()){
-        const [rect,list]=slots[i], [x,y,sw,sh]=rect.map((v,j)=>v*(j%2?h:w));
-        const age=t-card.t;
-        if(age<140){
-          ctx.save();ctx.globalAlpha=leave*(1-age/175);
-          ctx.lineWidth=.85;ctx.strokeStyle='#eceffe';
-          const gx=x+sw*.30,gy=y+sh*.28,gw=sw*.40,gh=sh*.44;
-          ctx.strokeRect(gx,gy,gw,gh);ctx.setLineDash([3,4]);
-          ctx.strokeRect(gx-5,gy-5,gw+10,gh+10);ctx.restore();continue;
+      const card=s.activeCard(t);
+      if(!card)return;
+      const [rect,[name]]=slots[card.index];
+      const [x,y,sw,sh]=rect.map((v,j)=>v*(j%2?h:w));
+      const age=t-card.t;
+      ctx.save();
+      if(age<95){
+        ctx.globalAlpha=age/95;
+        ctx.strokeStyle='#eceffe';ctx.lineWidth=.85;
+        ctx.strokeRect(x+sw*.3,y+sh*.28,sw*.4,sh*.44);
+      }else{
+        const image=get('pip-'+name);
+        if(image){
+          const alpha=clamp((age-95)/120,0,1)*clamp((cardDuration-age)/210,0,1);
+          ctx.globalAlpha=alpha;
+          crop(ctx,image,x,y,sw,sh);
+          if(!reducedMotion.matches){
+            ctx.globalAlpha=alpha*.26*Math.max(0,1-Math.abs(age-420)/120);
+            ctx.fillStyle='#fff3df';ctx.fillRect(x,y,sw,sh);
+          }
+          ctx.globalAlpha=alpha*.78;
+          ctx.strokeStyle='#f0f1ff';ctx.lineWidth=.8;ctx.strokeRect(x,y,sw,sh);
         }
-        const seconds=(age-140)/1000;
-        const phase=seconds/(1.17+i*.16),idx=Math.floor(phase)%list.length;
-        let key=list[idx],next=list[(idx+1)%list.length],mix=clamp((fract(phase)-.82)/.18,0,1);
-        if(i===0) {
-          const period=seconds%4.3;
-          key=period<2.12?list[0]:list[2];
-          next=period<.70?list[1]:list[2];
-          mix=period<.70?clamp(1-Math.abs(period-.48)/.17,0,1):clamp((period-1.9)/.22,0,1);
-        }
-        const image=get('pip-'+key),second=get('pip-'+next);
-        if(!image)continue;
-        const alpha=leave*clamp((age-140)/175,0,1);
-        ctx.save();ctx.globalAlpha=alpha;
-        crop(ctx,image,x,y,sw,sh);
-        if(second&&next!==key&&mix&&!reducedMotion.matches){
-          ctx.globalAlpha=alpha*mix;crop(ctx,second,x,y,sw,sh);
-        }
-        if(i===2&&!reducedMotion.matches){
-          ctx.globalAlpha=alpha*(.024+.061*Math.max(0,Math.sin(t*.009)));
-          ctx.fillStyle='#cff4ff';ctx.fillRect(x,y,sw,sh);
-        }
-        ctx.globalAlpha=alpha*.75;ctx.strokeStyle='#f0f1ff';ctx.lineWidth=.8;
-        ctx.strokeRect(x,y,sw,sh);ctx.restore();
       }
+      ctx.restore();
     }
     fragments(s,t) {
       const image=get('pink-fragments');if(!image)return;
@@ -379,7 +376,7 @@ const DreamEffects = (() => {
       }
     }
     eyeGlass(s,t) {
-      if(s.phase<7||!s.face)return;
+      if(!s.face||s.phase<8&&(s.phase!==7||t-s.entered>500))return;
       const {ctx,w,h}=this, f=s.face;
       const thin=s.phase===8?clamp((t-s.entered)/390,0,1):0;
       const cx=(f.eyes[0].x+f.eyes[1].x)/2,cy=(f.eyes[0].y+f.eyes[1].y)/2;
@@ -438,10 +435,34 @@ const DreamEffects = (() => {
         ctx.restore();
       }
     }
-    draw(s,t,source,fit,mirror,matte,cleanRoom,opacity,debug) {
+    restoreMountainHands(hands) {
+      if(!hands.length)return;
+      const {ctx,w,h}=this,c=this.scratch.getContext('2d');
+      c.clearRect(0,0,w,h);
+      c.save();c.fillStyle=c.strokeStyle='#fff';c.lineCap=c.lineJoin='round';
+      c.filter='blur(1.25px)';
+      for(const hand of hands){
+        const p=hand.points;
+        curve(c,[0,1,2,5,9,13,17].map(i=>p[i]),true);
+        c.fill();
+        for(const base of [1,5,9,13,17]){
+          for(let i=0;i<3;i++){
+            c.lineWidth=clamp(hand.scale*(base===1?.23:.18)*(1-i*.20),4,24);
+            curve(c,[p[base+i],p[base+i+1]]);c.stroke();
+          }
+        }
+      }
+      c.restore();
+      c.globalCompositeOperation='source-in';
+      c.drawImage(this.room,0,0);
+      c.globalCompositeOperation='source-over';
+      ctx.drawImage(this.scratch,0,0);
+    }
+    draw(s,t,source,fit,mirror,matte,cleanRoom,opacity,debug,mode='sequence') {
       const {ctx,w,h}=this;
       this.mirrorRoom(source,fit,mirror);
-      ctx.drawImage(s.phase===0&&cleanRoom&&matte?cleanRoom:this.room,0,0);
+      const useCleanRoom=mode==='free'&&s.phase===0&&cleanRoom&&matte;
+      ctx.drawImage(useCleanRoom?cleanRoom:this.room,0,0);
       const backdrop=()=>{
         this.mountain(s,t);
         if(s.phase===2&&s.ripples.length){
@@ -462,11 +483,16 @@ const DreamEffects = (() => {
         }
         backdrop();ctx.restore();
       }
-      if(matte&&(hasBackdrop||s.phase===0&&cleanRoom)){
-        ctx.save();ctx.globalAlpha=s.phase===0&&cleanRoom?opacity:1;
+      if(matte&&(hasBackdrop||useCleanRoom)){
+        ctx.save();ctx.globalAlpha=useCleanRoom?opacity:1;
         this.camera(ctx,matte.person,fit,mirror);ctx.restore();
       }
-      if(s.phase===0)this.frostEffect(s,t);
+      if(this.mountainMix>.012&&s.phase===1){
+        const hands=matte?.hands??[...s.tracks.values()]
+          .filter(track=>t-track.seen<180).map(track=>track.hand);
+        this.restoreMountainHands(hands);
+      }
+      if(s.phase===0)this.frostEffect(s,t,mode==='sequence',matte,fit,mirror);
       if(s.phase===3)this.print(s,t,matte,fit,mirror);
       this.portal(s,t,matte,fit,mirror);
       this.windows(s,t);

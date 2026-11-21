@@ -2,7 +2,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
 const test = require('node:test');
-const {Performance, hand, frameCorners} = vm.runInNewContext(
+const {Performance, hand, frameCorners, cardDuration} = vm.runInNewContext(
   fs.readFileSync(require.resolve('../gestures.js'), 'utf8')+'\nDreamGestures'
 );
 const p=(x,y,z=0)=>({x,y,z});
@@ -98,27 +98,38 @@ test('palm anchors are independent and moving palms do not open face windows',()
   step([[775,305,'palm','right']],face(),1050);
   assert.equal(s.groups.size,1);
 });
-test('four face taps, slow orbit, final finger and independently opened palms',()=>{
+test('four face taps show one card at a time and expire without a gesture',()=>{
   const {s,step,tap}=setup();s.enter(5,0,'');
   for(let i=0;i<12;i++)step([[418,266,'point']]);
   assert.equal(s.cards.length,0);
   for(let i=0;i<5;i++)step([[418,268+i,'two']]);
   assert.equal(s.cards.length,0);
-  for(const x of [560,418,565,414]){
+  for(const [index,x] of [560,418,565,414].entries()){
     step([],face(),300);tap(x,267);
+    assert.equal(s.snapshot(s.cards.at(-1).t).windows,1);
+    assert.equal(s.cards.at(-1).index,index);
   }
-  assert.equal(s.phase,6);assert.equal(s.cards.length,4);
-  for(let i=0;i<43;i++) {
-    const a=i*.16;
-    step([[380+21*Math.cos(a),284+21*Math.sin(a),'fist'],[587,288,'fist','right']],face(i<38||i>40),72);
-    assert.equal(s.cards.length,4);
-  }
-  assert.equal(s.phase,7);assert.equal(s.circleReady,true);
-  step([],face(),170);assert.equal(s.phase,7);
-  for(let i=0;i<4;i++)step([[560,280,'point']]);
+  assert.equal(s.phase,6);
+  s.advance(s.cards.at(-1).t+cardDuration);
+  assert.equal(s.phase,7);assert.equal(s.cards.length,0);
+  step([],face(),cardDuration+90);
+  for(let i=0;i<6;i++)step([[560,280,'point']]);
+  assert.equal(s.phase,7);
+  step([],face(),280);
+  tap(560,280);
   assert.equal(s.phase,8);
   step([[650,305,'palm','right']]);step([[650,305,'palm','right'],[337,306,'palm']]);
   assert.ok(s.endPalms);
   step();step([],face(),880);
   assert.equal(s.phase,0);assert.equal(s.cards.length,0);assert.equal(s.groups.size,0);
+});
+
+test('one cheek card can be followed by an off-cheek finishing tap',()=>{
+  const {s,step,tap,now}=setup();s.enter(5,0,'');
+  tap(560,267);
+  assert.equal(s.snapshot(now()).windows,1);
+  step([],face(),cardDuration+60);
+  assert.equal(s.snapshot(now()).windows,0);
+  tap(790,300);
+  assert.equal(s.phase,8);
 });
