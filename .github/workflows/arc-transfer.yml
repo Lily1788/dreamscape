@@ -10,7 +10,7 @@ jobs:
     steps:
       - name: Download RSA-encrypted Arc Reader intermediate (not an installable APK)
         env:
-          ENCRYPTED_URL: "https://release-assets.githubusercontent.com/github-production-release-asset/1415126867/2136af1d-5c0b-4ef4-b82b-4f21326ffa59?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-11-23T07%3A08%3A47Z&rscd=attachment%3B+filename%3Darc-reader-encrypted.zip&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-11-23T06%3A08%3A32Z&ske=2026-11-23T07%3A08%3A47Z&sks=b&skv=2018-11-09&sig=vZttwaF5OYuKjCAFmFFlS3e0rIMq3Xjs0b1dPGgO3sI%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc5NTQxNjE5OSwibmJmIjoxNzk1NDE0Mzk5LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.1WiuRPs3aj3mAw1i4LVSOUnpUfHfPd0zoy36dMcUPGQ&response-content-disposition=attachment%3B%20filename%3Darc-reader-encrypted.zip&response-content-type=application%2Foctet-stream"
+          ENCRYPTED_URL: "https://release-assets.githubusercontent.com/github-production-release-asset/1415126867/6e67ad16-4eb6-4531-a204-9f637e1b07a3?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-11-23T08%3A01%3A14Z&rscd=attachment%3B+filename%3Darc-reader-encrypted.zip&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-11-23T07%3A00%3A59Z&ske=2026-11-23T08%3A01%3A14Z&sks=b&skv=2018-11-09&sig=Y0osfZ%2FIF83daSC7H6VGXo4mQG7Ymxq6HMvLEk8e1G0%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc5NTQxOTY0NywibmJmIjoxNzk1NDE3ODQ3LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.Q84LnDFrQ6JmvrdCcKmVMn0VrDLR0sZHdwuqxTR0aas&response-content-disposition=attachment%3B%20filename%3Darc-reader-encrypted.zip&response-content-type=application%2Foctet-stream"
         run: |
           set -euo pipefail
           curl --fail --location --retry 3 --silent --show-error --max-time 300 "$ENCRYPTED_URL" -o /tmp/arc-reader-encrypted.zip
@@ -18,7 +18,7 @@ jobs:
           unzip -t /tmp/arc-reader-encrypted.zip
       - uses: actions/upload-artifact@v4
         with:
-          name: arc-reader-v2215-rsa-encrypted
+          name: arc-reader-v2216-rsa-encrypted
           path: /tmp/arc-reader-encrypted.zip
           retention-days: 1
           if-no-files-found: error
