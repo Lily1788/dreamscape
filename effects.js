@@ -378,7 +378,7 @@ const DreamEffects = (() => {
     fragments(s,t) {
       const image=get('pink-fragments');if(!image)return;
       const {ctx,w,h}=this,age=t-s.entered;
-      const a=clamp(age/380,0,1)*(1-clamp((age-1450)/1750,0,1));
+      const a=clamp((age+40)/150,0,1)*(1-clamp((age-1650)/1750,0,1));
       if(a<=0)return;
       for(const far of [true,false]){
         ctx.save();ctx.globalAlpha=a*(far?.42:.76);
