@@ -59,6 +59,7 @@ const W = 1920, H = 1080;
 let tracker, stream, recordingStream, downloadUrl, settings;
 let mp4Output, mp4AudioSource, recordingStartMs=0, recordingBusy=false;
 let clipEvents=[], activeClip=null, lastSoundAt=-Infinity, recordingError=null;
+let resumingSound=false, pendingSound=null;
 const hands = new Map();
 get('mirror').addEventListener('change',resetReveal);
 get('framing').addEventListener('change',resetReveal);
@@ -308,10 +309,29 @@ async function initSound() {
 
 function playClip(key) {
   const buffer=clips.get(String(key));
-  if (!buffer || sound?.state!=='running') return buffer?.duration ?? .46;
+  if (!buffer || !sound) return buffer?.duration ?? .46;
+  if (sound.state!=='running') {
+    // Resume suspended Web Audio and replay the latest requested effect,
+    // instead of silently dropping the tap.
+    pendingSound=String(key);
+    if (!resumingSound) {
+      resumingSound=true;
+      sound.resume().then(()=>{
+        resumingSound=false;
+        const next=pendingSound;
+        pendingSound=null;
+        if(next) playClip(next);
+      }).catch(error=>{
+        resumingSound=false;
+        console.warn('Click the camera preview to enable sound:',error);
+        status.textContent='Sound is blocked. Tap the camera picture once to enable it.';
+      });
+    }
+    return buffer.duration;
+  }
   const now=performance.now();
-  // No accidental rapid-fire narration: every word is a separate event.
-  if (now-lastSoundAt<520) return buffer.duration;
+  // Ignore duplicate landmark jitter, but allow intentional word changes.
+  if (now-lastSoundAt<180) return buffer.duration;
   lastSoundAt=now;
   if (activeClip) {
     const {source,gain,event}=activeClip;
@@ -341,7 +361,7 @@ function playClip(key) {
 }
 
 function activate(hand, index, now) {
-  if (now-(hand.hits[index]??-1000)<850) return;
+  if (now-(hand.hits[index]??-1000)<430) return;
   hand.hits[index]=now;
   const item=hand.items[index];
   const origin=hand.points[index];
@@ -385,7 +405,7 @@ function track(now, rect, options) {
       side,points,items,fingerOrder,hits:existing?.hits??{},
       pinch:existing?.pinch??null, pinchCandidate:existing?.pinchCandidate??null,
       pinchCandidateAt:existing?.pinchCandidateAt??0,
-      pinchReleaseAt:existing?.pinchReleaseAt??0, pinchArmed:existing?.pinchArmed??false,
+      pinchReleaseAt:existing?.pinchReleaseAt??0, pinchArmed:existing?.pinchArmed??true,
       thumbTouch:existing?.thumbTouch??false,
       thumbCandidateAt:existing?.thumbCandidateAt??0,
       revealAt:existing?.revealAt??now,lastSeen:now
@@ -394,42 +414,44 @@ function track(now, rect, options) {
     const span=Math.max(35,distance(raw[0],raw[9]));
     const closest=fingerOrder.reduce((a,b)=>distance(raw[4],raw[a])<distance(raw[4],raw[b])?a:b);
     const closeness=distance(raw[4],raw[closest])/span;
-    // Need a genuine open -> stable close -> release sequence; landmark jitter
-    // or temporarily lost tracking must never fire dozens of overlapping words.
-    if (closeness>.34) {
-      if (!hand.pinchReleaseAt) hand.pinchReleaseAt=now;
-      if (now-hand.pinchReleaseAt>160) {
-        hand.pinch=null;
-        hand.pinchArmed=true;
-      }
-      hand.pinchCandidate=null;
-    } else {
-      hand.pinchReleaseAt=0;
-      if (!hand.pinch && hand.pinchArmed && closeness<.16) {
-        if (hand.pinchCandidate!==closest) {
+    // Restore a responsive pinch: first hand detection is armed, and a stable
+    // thumb/fingertip contact (80 ms) is enough to play and record the sound.
+    // A sustained release is required before that finger can fire again.
+    if(hand.pinch!==null) {
+      const released=distance(raw[4],raw[hand.pinch])/span>.29;
+      if(released) {
+        if(!hand.pinchReleaseAt) hand.pinchReleaseAt=now;
+        if(now-hand.pinchReleaseAt>=110) {
+          hand.pinch=null;
+          hand.pinchArmed=true;
+          hand.pinchReleaseAt=0;
+        }
+      } else hand.pinchReleaseAt=0;
+    }
+    if(hand.pinch===null) {
+      if(hand.pinchArmed && closeness<.19) {
+        if(hand.pinchCandidate!==closest) {
           hand.pinchCandidate=closest;
           hand.pinchCandidateAt=now;
-        } else if (now-hand.pinchCandidateAt>=105) {
+        } else if(now-hand.pinchCandidateAt>=80) {
           hand.pinch=closest;
           hand.pinchArmed=false;
           hand.pinchCandidate=null;
           activate(hand,closest,now);
         }
-      } else if (closeness>=.16) {
-        hand.pinchCandidate=null;
-      }
+      } else if(closeness>=.22) hand.pinchCandidate=null;
     }
     const other=detected.find(candidate=>candidate.key!==key);
     if (other) {
       const across=Math.min(...tips.map(tip=>distance(raw[4],other.raw[tip])))/span;
-      if (across>.38) {hand.thumbTouch=false;hand.thumbCandidateAt=0;}
-      else if (!hand.thumbTouch && across<.15) {
+      if (across>.30) {hand.thumbTouch=false;hand.thumbCandidateAt=0;}
+      else if (!hand.thumbTouch && across<.19) {
         if (!hand.thumbCandidateAt) hand.thumbCandidateAt=now;
-        else if(now-hand.thumbCandidateAt>120) {
+        else if(now-hand.thumbCandidateAt>=80) {
           hand.thumbTouch=true;
           activate(hand,4,now);
         }
-      } else if(across>=.15) hand.thumbCandidateAt=0;
+      } else if(across>=.19) hand.thumbCandidateAt=0;
     } else {
       hand.thumbTouch=false;
       hand.thumbCandidateAt=0;
@@ -514,10 +536,20 @@ function effects(now) {
 }
 
 canvas.addEventListener('pointerdown',event=>{
+  // This actual user gesture unlocks the browser's audio output even when
+  // autoplay policy suspended it after camera initialization.
+  const ready=initSound();
   const rect=canvas.getBoundingClientRect();
   const point={x:(event.clientX-rect.left)*W/rect.width,y:(event.clientY-rect.top)*H/rect.height};
   const hit=targets.map(target=>({...target,d:Math.min(distance(point,target),distance(point,target.point))})).sort((a,b)=>a.d-b.d)[0];
-  if (hit?.d<62) activate(hit.hand,hit.index,performance.now());
+  if (hit?.d<62) {
+    if(sound?.state==='running' && clips.has(String(hit.hand.items[hit.index]))) {
+      activate(hit.hand,hit.index,performance.now());
+    } else {
+      ready.then(()=>activate(hit.hand,hit.index,performance.now())).catch(error=>console.warn('Unable to play tap sound:',error));
+    }
+  }
+  ready.catch(error=>console.warn('Unable to enable sound:',error));
 });
 
 function draw(now) {
@@ -601,7 +633,11 @@ cameraButton.addEventListener('click',async () => {
     return;
   }
   cameraButton.disabled=true;
-  const audioReady=initSound().catch(()=>{});
+  let soundReady=true;
+  const audioReady=initSound().catch(error=>{
+    soundReady=false;
+    console.warn('Audio failed to initialize:',error);
+  });
   status.textContent='Opening camera…';
   try {
     stopCamera();
@@ -612,7 +648,9 @@ cameraButton.addEventListener('click',async () => {
     await camera.play();
     status.textContent='Loading hand tracking…';
     await Promise.all([loadTracker(),audioReady]);
-    status.textContent='Hold up both open palms.';
+    status.textContent=soundReady && sound?.state==='running'
+      ? 'Hold up both open palms. Tap a fingertip to hear its sound.'
+      : 'Camera ready. Tap the camera preview to enable sound.';
     cameraButton.textContent='Close camera';
     record.disabled=!(canvas.captureStream && window.VideoEncoder && window.AudioEncoder);
     if (record.disabled) status.textContent='MP4 recording requires WebCodecs in this browser.';
@@ -683,6 +721,7 @@ async function finishRecording() {
     // One audio buffer spans exactly the recording duration, including silence.
     const soundtrack=buildTriggeredAudio(elapsed,events);
     await mp4AudioSource.add(soundtrack);
+    mp4AudioSource.close();
     await mp4Output.finalize();
     const actualType=await mp4Output.getMimeType();
     if(!/mp4a\.40\.2/i.test(actualType) || !/avc1/i.test(actualType)) {
