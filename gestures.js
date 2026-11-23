@@ -67,7 +67,7 @@ const DreamGestures = (() => {
       this.peaks=[0,0];this.lastPeak=-Infinity;this.groups=new Map();this.frame=null;
       this.frameSeen=-Infinity;this.frameSince=null;this.texture=-1;this.frames=0;
       this.closedAt=this.claspAt=-Infinity;this.face=null;
-      this.wingTurnAt=this.wingLastHand=-Infinity;this.wingStart=null;this.flashAt=Infinity;this.endPalms=false;this.neutralAt=null;
+      this.wingTurnAt=this.wingLastHand=-Infinity;this.wingStart=null;this.flashAt=Infinity;this.revealExitAt=Infinity;this.endPalms=false;this.neutralAt=null;
       this.handFrameStreak=0;this.lastHandFrame=-Infinity;this.lastDual=-Infinity;this.dualSamples=0;this.lastCard=-Infinity;
     }
     enter(phase,t,reason) {
@@ -194,17 +194,28 @@ const DreamGestures = (() => {
           this.orbit.clear();this.orbitDone=false;this.wingStart=null;
         }
         if(this.orbitDone&&framedPalms.length===2){
-          this.enter(3,t,'双掌张开，白蒙背景保持至手指出画');
+          this.enter(3,t,'双掌张开，延迟启动原版闪帧');
+          this.flashAt=t+260;
           this.wingLastHand=t;
+          this.revealExitAt=Infinity;
           this.orbit.clear();this.orbitDone=false;
         }
       }
       if(phase===3) {
+        // Palm opening starts the reveal. Only fully departed hands can end it.
+        // Debounce temporary tracking loss without shortening the final frame.
         const fingerVisible=hands.some(h=>h.points.slice(1).some(p=>
           p.x>=0&&p.x<=960&&p.y>=0&&p.y<=540));
-        if(fingerVisible&&this.flashAt===Infinity)this.wingLastHand=t;
-        if(t-this.wingLastHand>260&&this.flashAt===Infinity)this.flashAt=t+280;
-        if(t-this.flashAt>=720) this.enter(4,t,'等待双手成框');
+        if(fingerVisible){
+          this.wingLastHand=t;
+          this.revealExitAt=Infinity;
+        }else if(t-this.wingLastHand>=420&&t-this.flashAt>=500&&
+          this.revealExitAt===Infinity){
+          this.revealExitAt=t;
+          this.reason='双手已出画，原版闪帧渐隐退场';
+        }
+        if(this.revealExitAt!==Infinity&&t-this.revealExitAt>=300)
+          this.enter(4,t,'闪帧结束，等待双手成框');
       }
       if(phase===4||this.phase===4) {
         const corners=frameCorners(hands);
@@ -276,6 +287,7 @@ const DreamGestures = (() => {
           anchor:h.center,tip:h.points[8]})),
         wait:this.phase===1?'需要食指短点触；悬停、双指和摊掌不计':
           this.phase===2?(this.orbitDone?'转圈已确认，请张开双掌':'可继续点出水波，或闭眼捏手转圈准备羽翼'):
+          this.phase===3?'双掌已触发原版闪帧；画面保持至双手离开':
           this.phase===4?'需要四角稳定成凸四边形':
           this.phase===5?'需要食指在脸侧短点触':
           this.phase===6?'逐次点脸，集齐后闭眼捏手转圈':
