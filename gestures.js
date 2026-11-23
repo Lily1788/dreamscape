@@ -1,7 +1,7 @@
 'use strict';
 
 const DreamGestures = (() => {
-  const cardDuration=880;
+  const cardFade=360;
   const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
   const distance = (a, b) => Math.hypot(a.x-b.x, a.y-b.y);
   const mix = (a,b,t) => ({x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t});
@@ -63,7 +63,7 @@ const DreamGestures = (() => {
     constructor() { this.reset(0); }
     reset(t) {
       this.phase=0;this.entered=t;this.frostDelay=0;this.reason='等待扫掌';this.hands=[];this.tracks=new Map();
-      this.sweeps=[];this.sweepDistance=0;this.ripples=[];this.cards=[];
+      this.sweeps=[];this.sweepDistance=0;this.ripples=[];this.cards=[];this.cardsExit=-Infinity;this.orbit=new Map();this.orbitDone=false;this.eye=0;this.palmHeld=false;this.lastEndPalm=-Infinity;
       this.peaks=[0,0];this.lastPeak=-Infinity;this.groups=new Map();this.frame=null;
       this.frameSeen=-Infinity;this.frameSince=null;this.texture=-1;this.frames=0;
       this.closedAt=this.claspAt=this.motionAt=-Infinity;this.face=null;
@@ -113,17 +113,23 @@ const DreamGestures = (() => {
       if(age>420||stroke>=1.34) track.tap=null;
       return null;
     }
-    activeCard(t) {
-      const card=this.cards.at(-1);
-      return this.phase===6&&card&&t>=card.t&&t-card.t<cardDuration?card:null;
-    }
-    advance(t) {
-      if(this.phase!==6||this.cards.length!==4||this.activeCard(t))return;
-      this.cards=[];
-      this.enter(7,t,'画面已退场，等待食指短点触');
+    updateOrbit(hands) {
+      for(const h of hands){
+        const m=this.orbit.get(h.label)??{p:h.center,angle:null,turn:0,travel:0};
+        const dx=h.center.x-m.p.x,dy=h.center.y-m.p.y,step=Math.hypot(dx,dy);
+        if(step>h.scale*.035){
+          const angle=Math.atan2(dy,dx);
+          if(m.angle!=null){
+            const delta=angle-m.angle, turn=Math.atan2(Math.sin(delta),Math.cos(delta));
+            if(Math.abs(turn)<1.9)m.turn+=turn;
+          }
+          m.angle=angle;m.p=h.center;m.travel+=step;
+        }
+        this.orbit.set(h.label,m);
+        if(Math.abs(m.turn)>2.4&&m.travel>h.scale*.52)this.orbitDone=true;
+      }
     }
     update(hands,face,t,sensitivity=1) {
-      this.advance(t);
       const lastFace=this.face;
       this.face=face;
       if(face?.closed) this.closedAt=t;
@@ -218,32 +224,51 @@ const DreamGestures = (() => {
           this.lastCard=t;this.reason='已接受'+this.cards.at(-1).side+'脸侧点触 · '+this.cards.length+'/4';
         }
       }
-      const earlyFinish=phase===6&&face&&!this.activeCard(t)&&taps.some(p=>!this.cheek(p));
-      if((phase===7&&taps.length)||earlyFinish) {
-        this.cards=[];
-        this.enter(8,t,'已接受收尾点触');
+      if(phase===6&&this.cards.length===4&&clasp&&t-this.closedAt<320){
+        this.orbit.clear();this.orbitDone=false;
+        this.enter(7,t,'闭眼捏手转圈，四幅画保持');
+      }
+      if(phase===7&&this.cardsExit===-Infinity){
+        if(clasp&&t-this.closedAt<320)this.updateOrbit(hands);
+        if(this.orbitDone&&(!clasp&&t-this.claspAt>130||face&&!face.closed&&t-this.closedAt>170)){
+          this.cardsExit=t;this.reason='转圈完成，等待点脸';
+        }else if(!this.orbitDone&&t-Math.min(this.claspAt,this.closedAt)>650){
+          this.orbit.clear();
+          this.enter(6,t,'四幅画保持，请闭眼捏手转圈');
+        }
+      }
+      const faceTap=taps.find(p=>face&&Math.abs(p.x-face.x)<face.width*.74&&
+        Math.abs(p.y-face.y)<face.height*.54);
+      if(phase===7&&t-this.cardsExit>=cardFade&&this.cardsExit!==-Infinity&&faceTap){
+        this.eye=faceTap.x<face.x?0:1;
+        this.enter(8,t,'机械目镜已锁定，张掌切换');
       }
       if(phase===8) {
-        if(palms.length){this.endPalms=true;this.neutralAt=null;}
+        if(palms.length){
+          if(!this.palmHeld)this.eye=1-this.eye;
+          this.palmHeld=true;this.endPalms=true;this.neutralAt=null;
+        }
         else if(!hands.length||hands.every(h=>!h.point)) {
           this.neutralAt??=t;
           if(this.endPalms&&t-this.neutralAt>850){this.reset(t);this.frostDelay=625;}
         } else this.neutralAt=null;
+        if(!palms.length&&t-(this.lastEndPalm??-Infinity)>150)this.palmHeld=false;
+        if(palms.length)this.lastEndPalm=t;
       }
       return this.snapshot(t);
     }
     snapshot(t) {
-      return {phase:this.phase+1,reason:this.reason,windows:Number(Boolean(this.activeCard(t))),cardsShown:this.phase===6?this.cards.length:0,ripples:this.ripples.length,
+      return {phase:this.phase+1,reason:this.reason,windows:this.cardsExit===-Infinity||t-this.cardsExit<cardFade?this.cards.length:0,cardsShown:this.cards.length,ripples:this.ripples.length,
         corners:this.frame,texture:this.texture,groups:this.groups.size,
         candidates:this.hands.map(h=>({hand:h.label,palm:h.palm,point:h.point,pinch:h.pinch,
           anchor:h.center,tip:h.points[8]})),
         wait:this.phase===1||this.phase===2?'需要食指短点触；悬停、双指和摊掌不计':
           this.phase===4?'需要四角稳定成凸四边形':
           this.phase===5?'需要食指在脸侧短点触':
-          this.phase===6?'脸侧点触切换单张，退场后也可在脸侧外点触收尾':
-          this.phase===7?'再用食指短点触，进入花片和掌纹':'',
+          this.phase===6?'逐次点脸，集齐后闭眼捏手转圈':
+          this.phase===7?'转圈结束后用食指点脸，启动单眼目镜':'',
         frameAge:t-this.frameSeen};
     }
   }
-  return {Performance,hand,frameCorners,uniqueHands,handInFrame,clamp,distance,mix,cardDuration};
+  return {Performance,hand,frameCorners,uniqueHands,handInFrame,clamp,distance,mix,cardFade};
 })();

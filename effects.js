@@ -1,7 +1,7 @@
 'use strict';
 
 const DreamEffects = (() => {
-  const {clamp, distance, mix, cardDuration} = DreamGestures;
+  const {clamp, distance, mix, cardFade} = DreamGestures;
   const slots = [
     [[.74,.44,.17,.17],['08-field-jump','09-gold-silhouettes','10-muted-scene']],
     [[.07,.25,.18,.18],['02-violet-wings','01-pink-sea','03-pink-trees','04-flower-field']],
@@ -293,7 +293,7 @@ const DreamEffects = (() => {
       for(const g of groups){
         const alpha=this.fogMix*clamp((t-g.start)/550,0,1)*clamp((950-t+g.seen)/550,0,1);
         for(let i=0;i<25;i++) {
-          const n=g.seed+i,depth=hash(n+14),size=1.5+depth**2.7*9;
+          const n=g.seed+i,depth=hash(n+14),size=3+depth**2.2*15;
           const travel=fract(hash(n)+(t-g.start)*(.00005+depth*.000095));
           const x=g.origin.x+(travel-.5)*w*.81;
           const y=g.origin.y*.74+(hash(n+2)-.53)*h*.66+Math.sin(t*.0016+n)*12;
@@ -339,24 +339,25 @@ const DreamEffects = (() => {
     }
     windows(s,t) {
       const {ctx,w,h}=this;
-      const card=s.activeCard(t);
-      if(!card)return;
+      const leave=1-clamp((t-s.cardsExit)/cardFade,0,1);
+      if(leave<=0)return;
+      for(const card of s.cards){
       const [rect,[name]]=slots[card.index];
       const [x,y,sw,sh]=rect.map((v,j)=>v*(j%2?h:w));
       const age=t-card.t;
       ctx.save();
       if(age<95){
-        ctx.globalAlpha=age/95;
+        ctx.globalAlpha=leave*clamp(age/95,0,1);
         ctx.strokeStyle='#eceffe';ctx.lineWidth=.85;
         ctx.strokeRect(x+sw*.3,y+sh*.28,sw*.4,sh*.44);
       }else{
         const image=get('pip-'+name);
         if(image){
-          const alpha=clamp((age-95)/120,0,1)*clamp((cardDuration-age)/210,0,1);
+          const alpha=leave*clamp((age-95)/100,0,1);
           ctx.globalAlpha=alpha;
           crop(ctx,image,x,y,sw,sh);
           if(!reducedMotion.matches){
-            ctx.globalAlpha=alpha*.26*Math.max(0,1-Math.abs(age-420)/120);
+            ctx.globalAlpha=alpha*Math.max(.76*Math.max(0,1-Math.abs(age-215)/85),.46*Math.max(0,1-Math.abs(age-440)/105));
             ctx.fillStyle='#fff3df';ctx.fillRect(x,y,sw,sh);
           }
           ctx.globalAlpha=alpha*.78;
@@ -364,6 +365,7 @@ const DreamEffects = (() => {
         }
       }
       ctx.restore();
+      }
     }
     fragments(s,t) {
       const image=get('pink-fragments');if(!image)return;
@@ -380,11 +382,13 @@ const DreamEffects = (() => {
       }
     }
     eyeGlass(s,t) {
-      if(!s.face||s.phase<8&&(s.phase!==7||t-s.entered>500))return;
+      if(!s.face)return;
+      if(s.phase===8){this.monocle(s,t);return;}
+      if(s.phase!==7||t-s.cardsExit>=cardFade)return;
       const {ctx,w,h}=this, f=s.face;
-      const thin=s.phase===8?clamp((t-s.entered)/390,0,1):0;
+      const thin=clamp((t-s.cardsExit)/cardFade,0,1);
       const cx=(f.eyes[0].x+f.eyes[1].x)/2,cy=(f.eyes[0].y+f.eyes[1].y)/2;
-      const ew=f.width*.57,eh=f.height*(.076-.051*thin);
+      const ew=f.width*.73,eh=f.height*.16;
       const c=this.scratch.getContext('2d');c.clearRect(0,0,w,h);
       if(thin<1){
         c.save();c.filter='blur(1.45px)';c.drawImage(this.canvas,1.35,-.5);c.restore();
@@ -399,14 +403,30 @@ const DreamEffects = (() => {
       const fog=ctx.createRadialGradient(0,0,0,0,0,1);
       fog.addColorStop(0,`rgba(199,188,224,${.45*(1-thin)})`);fog.addColorStop(.65,`rgba(216,207,230,${.28*(1-thin)})`);fog.addColorStop(1,'#d8cfe600');
       ctx.fillStyle=fog;ctx.fillRect(-1,-1,2,2);ctx.restore();
-      if(thin>0){
-        ctx.save();ctx.translate(cx,cy);ctx.rotate(f.roll);ctx.globalAlpha=thin*.60;
-        ctx.strokeStyle='#bce1bf';ctx.lineWidth=.85;
-        ctx.beginPath();
-        for(const y of [-eh*.43,eh*.12,eh*.57]){ctx.moveTo(-ew,y);ctx.lineTo(ew,y);}
-        for(let i=-4;i<=4;i++){ctx.moveTo(i*ew/5,eh*.60);ctx.lineTo(i*ew/5,eh*.84);}
-        ctx.stroke();ctx.restore();
-      }
+    }
+    monocle(s,t) {
+      const {ctx}=this,f=s.face,eye=f.eyes[s.eye];
+      const w=f.width*.37,h=f.height*.19,side=s.eye===0?-1:1;
+      ctx.save();ctx.translate(eye.x,eye.y);ctx.rotate(f.roll);ctx.scale(side,1);
+      ctx.globalAlpha=clamp((t-s.entered)/160,0,1);
+      const chamfer=w*.12;
+      const shape=(inset)=>[
+        [-w/2+inset,-h/2+chamfer],[ -w/2+chamfer,-h/2+inset],
+        [w/2-chamfer,-h/2+inset],[w/2-inset,-h/2+chamfer],
+        [w/2-inset,h/2-chamfer],[w/2-chamfer,h/2-inset],
+        [-w/2+chamfer,h/2-inset],[-w/2+inset,h/2-chamfer]
+      ].map(([x,y])=>({x,y}));
+      curve(ctx,shape(0),true);ctx.fillStyle='#24495f34';ctx.fill();
+      ctx.strokeStyle='#162e43';ctx.lineWidth=2.8;ctx.stroke();
+      ctx.strokeStyle='#cdfaff';ctx.lineWidth=1;ctx.stroke();
+      curve(ctx,shape(3),true);ctx.strokeStyle='#83d8ef8a';ctx.lineWidth=.65;ctx.stroke();
+      curve(ctx,[{x:w*.49,y:-h*.21},{x:w*.70,y:-h*.42},{x:w*.81,y:-h*.42}]);
+      ctx.strokeStyle='#c9f6ff';ctx.lineWidth=1.4;ctx.stroke();
+      ctx.fillStyle='#98e9ff';ctx.fillRect(w*.79,-h*.52,w*.13,h*.21);
+      for(let i=0;i<5;i++)ctx.fillRect(-w*.30+i*w*.15,h*.54,1.2,i===2?4:2);
+      const y=reducedMotion.matches?0:(.5+.5*Math.sin(t/195)-.5)*h*.62;
+      ctx.fillStyle='#a9f8ff75';ctx.fillRect(-w*.36,y,w*.72,1);
+      ctx.restore();
     }
     hands(s,t) {
       const {ctx}=this;

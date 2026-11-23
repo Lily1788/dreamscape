@@ -2,7 +2,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
 const test = require('node:test');
-const {Performance, hand, frameCorners, cardDuration} = vm.runInNewContext(
+const {Performance, hand, frameCorners, cardFade} = vm.runInNewContext(
   fs.readFileSync(require.resolve('../gestures.js'), 'utf8')+'\nDreamGestures'
 );
 const p=(x,y,z=0)=>({x,y,z});
@@ -98,40 +98,34 @@ test('palm anchors are independent and moving palms do not open face windows',()
   step([[775,305,'palm','right']],face(),1050);
   assert.equal(s.groups.size,1);
 });
-test('four face taps show one card at a time and expire without a gesture',()=>{
-  const {s,step,tap}=setup();s.enter(5,0,'');
-  for(let i=0;i<12;i++)step([[418,266,'point']]);
-  assert.equal(s.cards.length,0);
-  for(let i=0;i<5;i++)step([[418,268+i,'two']]);
+test('cards accumulate, survive a closed-eye pause and retire together after a turn',()=>{
+  const {s,step,tap,now}=setup();s.enter(5,0,'');
+  for(let i=0;i<10;i++)step([[418,266,'point']]);
   assert.equal(s.cards.length,0);
   for(const [index,x] of [560,418,565,414].entries()){
     step([],face(),300);tap(x,267);
-    assert.equal(s.snapshot(s.cards.at(-1).t).windows,1);
-    assert.equal(s.cards.at(-1).index,index);
+    assert.equal(s.snapshot(now()).windows,index+1);
   }
-  assert.equal(s.phase,6);
-  s.advance(s.cards.at(-1).t+cardDuration);
-  assert.equal(s.phase,7);assert.equal(s.cards.length,0);
-  step([],face(),cardDuration+90);
-  for(let i=0;i<6;i++)step([[560,280,'point']]);
-  assert.equal(s.phase,7);
-  step([],face(),280);
-  tap(560,280);
-  assert.equal(s.phase,8);
-  step([[650,305,'palm','right']]);step([[650,305,'palm','right'],[337,306,'palm']]);
-  assert.ok(s.endPalms);
-  step();step([],face(),880);
-  assert.equal(s.phase,0);assert.equal(s.cards.length,0);assert.equal(s.groups.size,0);
-});
-
-test('one cheek card can be followed by an off-cheek finishing tap',()=>{
-  const {s,step,tap,now}=setup();s.enter(5,0,'');
-  tap(560,267);
-  assert.equal(s.snapshot(now()).windows,1);
-  step([],face(),cardDuration+60);
+  step([],face(),1800);
+  const clasp=[[380,284,'fist'],[587,288,'fist','right']];
+  for(let i=0;i<20;i++)step(clasp,face(true));
+  assert.equal(s.phase,7);assert.equal(s.orbitDone,false);
+  assert.equal(s.snapshot(now()).windows,4);
+  for(let i=0;i<35;i++){
+    const a=i*.19;
+    step([[380+20*Math.cos(a),284+20*Math.sin(a),'fist'],clasp[1]],face(true));
+    assert.equal(s.snapshot(now()).windows,4);
+  }
+  assert.equal(s.orbitDone,true);
+  step([],face(),210);step([],face(),cardFade+60);
   assert.equal(s.snapshot(now()).windows,0);
-  tap(790,300);
-  assert.equal(s.phase,8);
+  tap(560,267);assert.equal(s.phase,8);assert.equal(s.eye,1);
+  for(let i=0;i<8;i++)step([[650,305,'palm','right']]);
+  assert.equal(s.eye,0);
+  for(let i=0;i<6;i++)step([[560,267,'point']]);
+  step([[650,305,'palm','right']]);assert.equal(s.eye,1);
+  step();step([],face(),880);
+  assert.equal(s.phase,0);
 });
 
 test('clipped fingertips defer flocks and reset readiness until two full frames',()=>{
