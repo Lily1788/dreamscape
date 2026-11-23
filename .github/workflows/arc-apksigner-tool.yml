@@ -1,0 +1,25 @@
+name: Arc Reader Official Android SDK Signing Tool
+on:
+  push:
+    branches: [arc-reader-transfer-2211]
+    paths: [.github/workflows/arc-apksigner-tool.yml]
+permissions: {contents: read}
+jobs:
+  bundle:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Bundle installed Android SDK apksigner.jar
+        run: |
+          set -euo pipefail
+          v=$(ls "$ANDROID_HOME/build-tools" | sort -V | tail -1)
+          p="$ANDROID_HOME/build-tools/$v/lib/apksigner.jar"
+          test -s "$p"
+          mkdir -p /tmp/apksigner-tool/lib
+          cp "$p" /tmp/apksigner-tool/lib/apksigner.jar
+          sha256sum /tmp/apksigner-tool/lib/apksigner.jar
+      - uses: actions/upload-artifact@v4
+        with:
+          name: arc-apksigner-tool
+          path: /tmp/apksigner-tool/lib/apksigner.jar
+          retention-days: 1
+          if-no-files-found: error
