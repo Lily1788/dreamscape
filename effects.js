@@ -339,7 +339,7 @@ const DreamEffects = (() => {
     }
     windows(s,t) {
       const {ctx,w,h}=this;
-      const leave=1-clamp((t-s.cardsExit)/cardFade,0,1);
+      const leave=s.cardsExit===-Infinity?1:1-clamp((t-s.cardsExit)/cardFade,0,1);
       if(leave<=0)return;
       for(const card of s.cards){
       const [rect,[name]]=slots[card.index];
@@ -384,9 +384,9 @@ const DreamEffects = (() => {
     eyeGlass(s,t) {
       if(!s.face)return;
       if(s.phase===8){this.monocle(s,t);return;}
-      if(s.phase!==7||t-s.cardsExit>=cardFade)return;
+      if(s.phase!==7||s.cardsExit!==-Infinity&&t-s.cardsExit>=cardFade)return;
       const {ctx,w,h}=this, f=s.face;
-      const thin=clamp((t-s.cardsExit)/cardFade,0,1);
+      const thin=s.cardsExit===-Infinity?0:clamp((t-s.cardsExit)/cardFade,0,1);
       const cx=(f.eyes[0].x+f.eyes[1].x)/2,cy=(f.eyes[0].y+f.eyes[1].y)/2;
       const ew=f.width*.73,eh=f.height*.16;
       const c=this.scratch.getContext('2d');c.clearRect(0,0,w,h);
