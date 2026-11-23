@@ -741,6 +741,8 @@ async function startRecording() {
     mp4Output.addAudioTrack(mp4AudioSource);
     recordingError=null;
     videoSource.errorPromise.catch(error=>{
+      // Stopping the canvas track during finalization is intentional.
+      if(mode==='finalizing' || mode==='idle') return;
       recordingError=error;
       console.error('Video capture failed:',error);
       status.textContent='Video encoding failed. Stop recording to finish.';
