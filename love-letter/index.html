@@ -224,7 +224,8 @@ const choices = sayings.filter(line=>line!==previousSaying);
 const saying = choices[Math.floor(Math.random()*choices.length)];
 try { sessionStorage.setItem('letter-saying',saying); } catch {}
 sayingLabel.textContent=saying;
-layout();
+// Do not call layout() while targets is still in its temporal dead zone.
+// ResizeObserver runs after module evaluation; fonts.ready will refresh text widths.
 
 function dedication(options) {
   // Real font glyphs, fully opaque and shadow-free. This canvas pass is only
@@ -665,6 +666,8 @@ addEventListener('pagehide',()=>{
   finishRecording();
   stopCamera();
 });
+// All module declarations and event listeners are now initialized.
+document.fonts.ready.then(layout).catch(error=>console.warn('Font layout:',error));
 </script>
 </body>
 </html>
