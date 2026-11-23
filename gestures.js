@@ -1,7 +1,7 @@
 'use strict';
 
 const DreamGestures = (() => {
-  const cardFade=360;
+  const cardFade=260;
   const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
   const distance = (a, b) => Math.hypot(a.x-b.x, a.y-b.y);
   const mix = (a,b,t) => ({x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t});
@@ -63,7 +63,7 @@ const DreamGestures = (() => {
     constructor() { this.reset(0); }
     reset(t) {
       this.phase=0;this.entered=t;this.frostDelay=0;this.reason='等待扫掌';this.hands=[];this.tracks=new Map();
-      this.sweeps=[];this.sweepDistance=0;this.ripples=[];this.cards=[];this.cardsExit=-Infinity;this.orbit=new Map();this.orbitDone=false;this.eye=0;this.palmHeld=false;this.lastEndPalm=-Infinity;
+      this.sweeps=[];this.sweepDistance=0;this.ripples=[];this.cards=[];this.cardsExit=-Infinity;this.pendingFinalPoint=null;this.orbit=new Map();this.orbitDone=false;this.eye=0;this.palmHeld=false;this.lastEndPalm=-Infinity;
       this.peaks=[0,0];this.lastPeak=-Infinity;this.groups=new Map();this.frame=null;
       this.frameSeen=-Infinity;this.frameSince=null;this.texture=-1;this.frames=0;
       this.closedAt=this.claspAt=-Infinity;this.face=null;
@@ -254,17 +254,25 @@ const DreamGestures = (() => {
       if(phase===7&&this.cardsExit===-Infinity){
         if(clasp&&t-this.closedAt<320)this.updateOrbit(hands);
         if(this.orbitDone&&(!clasp&&t-this.claspAt>130||face&&!face.closed&&t-this.closedAt>170)){
-          this.cardsExit=t;this.reason='转圈完成，等待点脸';
+          this.cardsExit=t;this.pendingFinalPoint=null;this.reason='转圈完成，伸出食指即可召唤花瓣';
         }else if(!this.orbitDone&&t-Math.min(this.claspAt,this.closedAt)>650){
           this.orbit.clear();
           this.enter(6,t,'四幅画保持，请闭眼捏手转圈');
         }
       }
-      const faceTap=taps.find(p=>face&&Math.abs(p.x-face.x)<face.width*.74&&
-        Math.abs(p.y-face.y)<face.height*.54);
-      if(phase===7&&t-this.cardsExit>=cardFade&&this.cardsExit!==-Infinity&&faceTap){
-        this.eye=faceTap.x<face.x?0:1;
-        this.enter(8,t,'机械目镜已锁定，张掌切换');
+      if(phase===7&&this.cardsExit!==-Infinity) {
+        // Pointing is enough; a separate short tap next to the face is not
+        // required. Buffer any point during the fade so it cannot be missed.
+        const pointing=hands.find(h=>h.point&&h.points[8].x>=0&&h.points[8].x<=960&&
+          h.points[8].y>=0&&h.points[8].y<=540);
+        const tip=pointing?.points[8]??taps[0]??null;
+        if(tip)this.pendingFinalPoint={tip,t};
+        const queued=this.pendingFinalPoint;
+        if(t-this.cardsExit>=cardFade&&queued&&t-queued.t<=950) {
+          this.eye=queued.tip.x<(face?.x??480)?0:1;
+          this.pendingFinalPoint=null;
+          this.enter(8,t,'已识别食指，花瓣立即展开');
+        }
       }
       if(phase===8) {
         if(palms.length){
@@ -291,7 +299,7 @@ const DreamGestures = (() => {
           this.phase===4?'需要四角稳定成凸四边形':
           this.phase===5?'需要食指在脸侧短点触':
           this.phase===6?'逐次点脸，集齐后闭眼捏手转圈':
-          this.phase===7?'转圈结束后用食指点脸，启动单眼目镜':'',
+          this.phase===7?'四幅画退场时伸出食指，即刻召唤花瓣':'',
         frameAge:t-this.frameSeen};
     }
   }
