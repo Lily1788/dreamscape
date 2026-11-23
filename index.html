@@ -47,6 +47,7 @@ audio::-webkit-media-controls-panel{background-color:#f4d3e3}
 .stage-actions .record-action.is-recording .icon-tile{background:#f5a9c3;color:#a51f54}
 .record-toast{position:absolute;z-index:4;left:50%;bottom:calc(150px + env(safe-area-inset-bottom));transform:translateX(-50%);max-width:min(470px,calc(100% - 28px));padding:9px 14px;border-radius:15px;background:#151727cd;color:#fff;font-size:13px;text-align:center;pointer-events:none}
 .record-download{position:absolute;z-index:5;bottom:calc(148px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);border-radius:16px;padding:11px 18px;background:#f2c7da;color:#422333;font-weight:700;text-decoration:none;border:1px solid #dfa4c0}
+.record-toast:has(+ .record-download:not([hidden])){bottom:calc(210px + env(safe-area-inset-bottom))}
 [hidden]{display:none!important}
 @media(max-width:420px){.stage-actions{gap:6px}.stage-actions button{font-size:12px;padding:7px 8px}.stage-actions button .icon-tile{width:25px;height:25px}.stage-actions button svg{width:19px;height:19px}.record-toast{bottom:calc(136px + env(safe-area-inset-bottom))}}
 
