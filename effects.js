@@ -153,6 +153,10 @@ const DreamEffects = (() => {
       this.room=layer(this.w,this.h);this.scratch=layer(this.w,this.h);
       this.frost=layer(this.w,this.h);this.erase=layer(this.w,this.h);
       this.textureLayer=layer(this.w,this.h);
+      this.environment=layer(this.w,this.h);
+      this.foreground=layer(this.w,this.h);
+      this.foregroundContext=this.foreground.getContext('2d',{willReadFrequently:true});
+      this.maskStamp=null;
       this.inkHands=new Map();
       this.refract=refraction(this.w,this.h);this.lastPeaks=[0,0];this.mountainMix=0;this.fogMix=0;
       this.refreshMaskContext();
@@ -163,7 +167,7 @@ const DreamEffects = (() => {
     }
     reset() {
       this.lastPeaks=[0,0];this.mountainMix=this.fogMix=0;
-      this.inkHands.clear();this.refreshMaskContext();
+      this.inkHands.clear();this.maskStamp=null;this.refreshMaskContext();
     }
     mirrorRoom(source,fit,mirror) {
       const c=this.room.getContext('2d');
@@ -175,14 +179,14 @@ const DreamEffects = (() => {
       ctx.save();if(mirror){ctx.translate(this.w,0);ctx.scale(-1,1);}
       ctx.drawImage(src,fit.x,fit.y,fit.w,fit.h);ctx.restore();
     }
-    mountain(s,t) {
-      const {ctx,w,h}=this;
+    mountain(s,t,ctx) {
+      const {w,h}=this;
       this.mountainMix+=( (s.phase===1&&t-s.lastPeak<420?1:0)-this.mountainMix)*.13;
       if(this.mountainMix<.008)return;
       ctx.save();ctx.globalAlpha=this.mountainMix;
       ctx.fillStyle='#0c1a32dc';ctx.fillRect(0,0,w,h);
       const horizon=h*.56;
-      ctx.lineWidth=.75;ctx.strokeStyle='#a0c8f247';ctx.beginPath();
+      ctx.lineWidth=.75;ctx.strokeStyle='#a0c8f25a';ctx.beginPath();
       for(let i=-16;i<=16;i++){
         ctx.moveTo(w*.5+i*w*.013,horizon);ctx.lineTo(w*.5+i*w*.086,h);
       }
@@ -198,7 +202,7 @@ const DreamEffects = (() => {
           const ridge=Math.max(.15,Math.sin(i*.63+row*.8)*.45+hash(i+row*32)*.58);
           return {x,y:horizon+row*14-ridge*(.06+peak*.29)*h};
         });
-        ctx.strokeStyle=row<2?'#c2d9f77a':'#7199c95a';
+        ctx.strokeStyle=row<2?'#c2d9f796':'#7199c96a';
         curve(ctx,points);ctx.stroke();
         ctx.beginPath();
         for(const p of points){
@@ -275,8 +279,8 @@ const DreamEffects = (() => {
         this.camera(ctx,matte.white,fit,mirror);ctx.restore();
       }
     }
-    birds(s,t) {
-      const {ctx,w,h}=this;
+    birds(s,t,ctx) {
+      const {w,h}=this;
       const groups=[...s.groups.values()].filter(g=>t-g.seen<950);
       const target=(s.phase===5||s.phase===6)&&groups.length?1:0;
       this.fogMix+=(target-this.fogMix)*.10;
@@ -435,28 +439,47 @@ const DreamEffects = (() => {
         ctx.restore();
       }
     }
-    restoreMountainHands(hands) {
-      if(!hands.length)return;
-      const {ctx,w,h}=this,c=this.scratch.getContext('2d');
+    trackedForeground(matte,fit,mirror) {
+      if(matte.stamp!=null&&this.maskStamp===matte.stamp)return;
+      this.maskStamp=matte.stamp;
+      const {w,h,foregroundContext:c}=this;
       c.clearRect(0,0,w,h);
+      this.camera(c,matte.white,fit,mirror);
+      // Suppress the weak mask fringe before adding the independently tracked fingers.
+      const image=c.getImageData(0,0,w,h),data=image.data;
+      for(let i=3;i<data.length;i+=4)data[i]=clamp((data[i]-104)*2.32,0,255);
+      c.putImageData(image,0,0);
       c.save();c.fillStyle=c.strokeStyle='#fff';c.lineCap=c.lineJoin='round';
-      c.filter='blur(1.25px)';
-      for(const hand of hands){
+      c.filter='blur(.7px)';
+      for(const hand of matte.hands){
         const p=hand.points;
         curve(c,[0,1,2,5,9,13,17].map(i=>p[i]),true);
         c.fill();
         for(const base of [1,5,9,13,17]){
           for(let i=0;i<3;i++){
-            c.lineWidth=clamp(hand.scale*(base===1?.23:.18)*(1-i*.20),4,24);
+            c.lineWidth=clamp(hand.scale*(base===1?.24:.22)*(1-i*.13),4,30);
             curve(c,[p[base+i],p[base+i+1]]);c.stroke();
           }
         }
       }
       c.restore();
-      c.globalCompositeOperation='source-in';
-      c.drawImage(this.room,0,0);
+    }
+    handEnvironment(s,t,matte,fit,mirror) {
+      if(!matte?.handReady||s.handFrameStreak<2||matte.hands.length!==s.hands.length||
+         s.hands.some(h=>!matte.hands.some(p=>p.label===h.label))){
+        this.mountainMix=this.fogMix=0;
+        return;
+      }
+      const c=this.environment.getContext('2d');
+      c.clearRect(0,0,this.w,this.h);
+      if(s.phase===1) this.mountain(s,t,c);
+      else this.birds(s,t,c);
+      if(this.mountainMix<.008&&this.fogMix<.012)return;
+      this.trackedForeground(matte,fit,mirror);
+      c.globalCompositeOperation='destination-out';
+      c.drawImage(this.foreground,0,0);
       c.globalCompositeOperation='source-over';
-      ctx.drawImage(this.scratch,0,0);
+      this.ctx.drawImage(this.environment,0,0);
     }
     draw(s,t,source,fit,mirror,matte,cleanRoom,opacity,debug,mode='sequence') {
       const {ctx,w,h}=this;
@@ -464,15 +487,16 @@ const DreamEffects = (() => {
       const useCleanRoom=mode==='free'&&s.phase===0&&cleanRoom&&matte;
       ctx.drawImage(useCleanRoom?cleanRoom:this.room,0,0);
       const backdrop=()=>{
-        this.mountain(s,t);
         if(s.phase===2&&s.ripples.length){
           if(!this.refract?.(ctx,this.room,s.ripples,t)) this.refractFallback(s.ripples,t);
         }
         if(s.phase===3)this.wing(s,t);
-        this.birds(s,t);
         if(s.phase===8)this.fragments(s,t);
       };
-      const hasBackdrop=this.mountainMix>.01||this.fogMix>.01||[1,2,3,5,8].includes(s.phase);
+      const handBackground=[1,5].includes(s.phase);
+      if(handBackground)this.handEnvironment(s,t,matte,fit,mirror);
+      else this.mountainMix=this.fogMix=0;
+      const hasBackdrop=[2,3,8].includes(s.phase);
       if(hasBackdrop){
         ctx.save();
         if(!matte&&s.face){
@@ -486,11 +510,6 @@ const DreamEffects = (() => {
       if(matte&&(hasBackdrop||useCleanRoom)){
         ctx.save();ctx.globalAlpha=useCleanRoom?opacity:1;
         this.camera(ctx,matte.person,fit,mirror);ctx.restore();
-      }
-      if(this.mountainMix>.012&&s.phase===1){
-        const hands=matte?.hands??[...s.tracks.values()]
-          .filter(track=>t-track.seen<180).map(track=>track.hand);
-        this.restoreMountainHands(hands);
       }
       if(s.phase===0)this.frostEffect(s,t,mode==='sequence',matte,fit,mirror);
       if(s.phase===3)this.print(s,t,matte,fit,mirror);

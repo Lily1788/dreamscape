@@ -29,6 +29,10 @@ const DreamGestures = (() => {
       clasp:pinch||open===0,velocity:previous?distance(previous.center,center)/scale:0};
   }
 
+  function handInFrame(hand) {
+    const margin=clamp(hand.scale*.10,7,21);
+    return hand.points.every(p=>p.x>=margin&&p.y>=margin&&p.x<=960-margin&&p.y<=540-margin);
+  }
   function uniqueHands(items) {
     const distinct=[];
     for(const item of items){
@@ -64,7 +68,7 @@ const DreamGestures = (() => {
       this.frameSeen=-Infinity;this.frameSince=null;this.texture=-1;this.frames=0;
       this.closedAt=this.claspAt=this.motionAt=-Infinity;this.face=null;
       this.wingHeld=-Infinity;this.flashAt=Infinity;this.endPalms=false;this.neutralAt=null;
-      this.lastDual=-Infinity;this.dualSamples=0;this.lastCard=-Infinity;
+      this.handFrameStreak=0;this.lastHandFrame=-Infinity;this.lastDual=-Infinity;this.dualSamples=0;this.lastCard=-Infinity;
     }
     enter(phase,t,reason) {
       this.phase=phase;this.entered=t;this.reason=reason;
@@ -126,7 +130,11 @@ const DreamGestures = (() => {
       if(lastFace&&face&&(distance(face,lastFace)>face.width*.012||
         Math.abs(face.roll-lastFace.roll)>.019)) this.motionAt=t;
       this.hands=hands;
+      const complete=hands.length>0&&hands.every(handInFrame);
+      this.handFrameStreak=complete?(t-this.lastHandFrame<245?this.handFrameStreak+1:1):0;
+      this.lastHandFrame=t;
       const palms=hands.filter(h=>h.palm);
+      const framedPalms=palms.filter(handInFrame);
       const clasp=hands.length===2&&hands.every(h=>h.clasp&&(!face||
         Math.abs(h.center.y-face.y)<face.height*1.40));
       if(clasp) this.claspAt=t;
@@ -151,7 +159,7 @@ const DreamGestures = (() => {
       if(phase===0 && palms.length) {
         const swept=this.sweepDistance>palms[0].scale*.78;
         if(swept)this.reason='已接受扫掌，清晰轨迹保留';
-        if(palms.length===2&&swept&&palms.every(p=>p.center.y<445)&&
+        if(framedPalms.length===2&&swept&&palms.every(p=>p.center.y<445)&&
           Math.abs(palms[0].center.x-palms[1].center.x)>palms[0].scale*2.1){
           this.dualSamples=t-this.lastDual<250?this.dualSamples+1:1;
           this.lastDual=t;
@@ -160,8 +168,8 @@ const DreamGestures = (() => {
       }
 
       if(this.phase===1) {
-        if(palms.length) this.lastPeak=t;
-        for(const p of palms) {
+        if(framedPalms.length) this.lastPeak=t;
+        for(const p of framedPalms) {
           const side=p.center.x<480?0:1;
           this.peaks[side]=clamp((455-p.center.y)/340,.05,1.25);
         }
@@ -192,11 +200,11 @@ const DreamGestures = (() => {
           }
         } else {
           this.frameSince=null;
-          if(this.frames&&palms.length&&t-this.frameSeen>280) this.enter(5,t,'已接受张掌召唤飞鸟');
+          if(this.frames&&framedPalms.length&&t-this.frameSeen>280) this.enter(5,t,'已接受张掌召唤飞鸟');
         }
       }
       if(this.phase===5) {
-        for(const p of palms) {
+        for(const p of framedPalms) {
           const group=this.groups.get(p.label)??{origin:p.center,start:t,seed:this.groups.size*723};
           group.origin=mix(group.origin,p.center,.50);group.seen=t;this.groups.set(p.label,group);
         }
@@ -237,5 +245,5 @@ const DreamGestures = (() => {
         frameAge:t-this.frameSeen};
     }
   }
-  return {Performance,hand,frameCorners,uniqueHands,clamp,distance,mix,cardDuration};
+  return {Performance,hand,frameCorners,uniqueHands,handInFrame,clamp,distance,mix,cardDuration};
 })();

@@ -133,3 +133,17 @@ test('one cheek card can be followed by an off-cheek finishing tap',()=>{
   tap(790,300);
   assert.equal(s.phase,8);
 });
+
+test('clipped fingertips defer flocks and reset readiness until two full frames',()=>{
+  const {s,step}=setup();s.enter(5,0,'');
+  step([[180,47,'palm']]);step([[180,47,'palm']]);
+  assert.equal(s.handFrameStreak,0);
+  assert.equal(s.groups.size,0);
+  step([[180,220,'palm']]);
+  assert.equal(s.handFrameStreak,1);
+  step([[180,220,'palm']]);
+  assert.equal(s.handFrameStreak,2);
+  step([[180,220,'palm'],[790,47,'palm','right']]);
+  assert.equal(s.handFrameStreak,0);
+  assert.equal(s.groups.size,1);
+});
