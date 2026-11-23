@@ -243,6 +243,10 @@ const DreamEffects = (() => {
       const {ctx,w,h}=this, image=get('wing-cutout'),f=s.face;
       if(s.wingStart===null)return;
       ctx.save();ctx.globalAlpha=clamp((t-s.wingStart)/310,0,1);
+      // Restore the original blue-violet environmental transformation.
+      ctx.fillStyle='#45689bbf';ctx.fillRect(0,0,w,h);
+      ctx.fillStyle=radial(ctx,w*.49,h*.45,w*.69,'#b0c7ee59','#252d5ea5');
+      ctx.fillRect(0,0,w,h);
       if(image&&f){
         const size=clamp(f.width*2.5,w*.19,w*.43);
         for(const sign of [-1,1]){
@@ -253,19 +257,13 @@ const DreamEffects = (() => {
       }
       ctx.restore();
     }
-    whiteBackdrop(s,t) {
-      const {ctx,w,h}=this;
-      const rise=clamp((t-s.entered)/260,0,1);
-      const fall=1-clamp((t-s.flashAt+280)/280,0,1);
-      if(rise*fall===0)return;
-      ctx.save();ctx.globalAlpha=rise*fall;
-      ctx.fillStyle='#f1f3f2cf';ctx.fillRect(0,0,w,h);
-      ctx.fillStyle=radial(ctx,w*.5,h*.45,w*.55,'#fff9','#edf3f620');
-      ctx.fillRect(0,0,w,h);ctx.restore();
-    }
     print(s,t,matte,fit,mirror) {
-      const {ctx,w,h}=this, elapsed=t-s.flashAt;
-      if(elapsed<0||elapsed>=720)return;
+      if(t<s.flashAt)return;
+      // Hold the last visible frame of the original print sequence until fingers leave.
+      const {ctx,w,h}=this, elapsed=Math.min(500,t-s.flashAt);
+      const exitAlpha=s.revealExitAt===Infinity?1:1-clamp((t-s.revealExitAt)/300,0,1);
+      if(exitAlpha<=0)return;
+      ctx.save();ctx.globalAlpha*=exitAlpha;
       if(elapsed<260){
         ctx.save();ctx.globalCompositeOperation='saturation';ctx.fillStyle='#888';ctx.fillRect(0,0,w,h);ctx.restore();
         ctx.fillStyle='#15182d40';
@@ -280,12 +278,14 @@ const DreamEffects = (() => {
             ctx.fillRect(-width*.155,-height*.053,width*.31,height*.106);ctx.restore();
           });
         }
-      } else if(matte&&elapsed<635){
-        ctx.save();ctx.globalAlpha=1-clamp((elapsed-510)/125,0,1);
-        if(reducedMotion.matches)ctx.globalAlpha*=.55;
+      }else{
+        ctx.save();
+        if(reducedMotion.matches)ctx.globalAlpha*=.75;
         ctx.fillStyle=elapsed<495?'#8199b3':'#8aa69c';ctx.fillRect(0,0,w,h);
-        this.camera(ctx,matte.white,fit,mirror);ctx.restore();
+        if(matte)this.camera(ctx,matte.white,fit,mirror);
+        ctx.restore();
       }
+      ctx.restore();
     }
     birds(s,t,ctx) {
       const {w,h}=this;
@@ -517,8 +517,7 @@ const DreamEffects = (() => {
         if(s.phase===2&&s.ripples.length){
           if(!this.refract?.(ctx,this.room,s.ripples,t)) this.refractFallback(s.ripples,t);
         }
-        if(s.phase===2)this.wing(s,t);
-        if(s.phase===3)this.whiteBackdrop(s,t);
+        if(s.phase===2||(s.phase===3&&t<s.flashAt))this.wing(s,t);
         if(s.phase===8)this.fragments(s,t);
       };
       const handBackground=[1,5].includes(s.phase);
