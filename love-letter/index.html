@@ -8,7 +8,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Fraunces:ital,opsz,wght@1,9..144,700&family=Pacifico&family=Playfair+Display:ital,wght@1,700&family=Satisfy&display=swap">
 <style>
 :root{color-scheme:dark;font-family:system-ui,sans-serif;background:#21151d;color:#fff1eb}*{box-sizing:border-box}body{margin:0}button,input,select{font:inherit}button,select{cursor:pointer}button,a,input,select{touch-action:manipulation}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #ffb8cd;outline-offset:4px}
-.stage{position:relative;height:100svh;isolation:isolate;overflow:hidden;background:#21151d}canvas{width:100%;height:100%;object-fit:fill;display:block}video{display:none}.controls{position:absolute;bottom:max(22px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;padding:7px;border:1px solid #ffffff38;border-radius:40px;background:#281923b8;backdrop-filter:blur(18px);white-space:nowrap}.pill{border:0;border-radius:30px;padding:10px 17px;color:#fff1eb;background:#ffffff19;text-decoration:none;font-size:.82rem}.primary{background:#ffbbcd;color:#421628;font-weight:700}.status{position:absolute;bottom:77px;left:50%;transform:translateX(-50%);margin:0;text-align:center;width:max-content;max-width:85%;font-size:.82rem;background:#261822bf;border-radius:24px;padding:7px 12px}.status:empty{display:none}.name{position:absolute;background:transparent;border:0;border-bottom:1px dashed #b82160b8;color:transparent;caret-color:#b82160;outline-offset:4px;padding:0;min-width:0}.name:focus{border-bottom-style:solid}.name::placeholder{color:transparent}.rotate{display:none}.settings{max-width:800px;margin:auto;padding:56px 24px 80px}.settings h1{font:italic 700 42px Georgia;margin:0 0 28px}.options{display:grid;grid-template-columns:repeat(auto-fit,minmax(205px,1fr));gap:12px}.options label{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:48px;padding:11px 14px;background:#382831;border-radius:14px}.options input{accent-color:#ffbbcd}.options select{border:0;background:#382831}.settings p{color:#e5c4cf;line-height:1.55}.download[hidden]{display:none}.download{display:inline-block;margin-top:12px}
+.stage{position:relative;height:100svh;isolation:isolate;overflow:hidden;background:#21151d}canvas{width:100%;height:100%;object-fit:fill;display:block}video{display:none}.controls{position:absolute;bottom:max(22px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;padding:7px;border:1px solid #ffffff38;border-radius:40px;background:#281923b8;backdrop-filter:blur(18px);white-space:nowrap}.pill{border:0;border-radius:30px;padding:10px 17px;color:#fff1eb;background:#ffffff19;text-decoration:none;font-size:.82rem}.primary{background:#ffbbcd;color:#421628;font-weight:700}.status{position:absolute;bottom:77px;left:50%;transform:translateX(-50%);margin:0;text-align:center;width:max-content;max-width:85%;font-size:.82rem;background:#261822bf;border-radius:24px;padding:7px 12px}.status:empty{display:none}.dedication-to,.dedication-saying{position:absolute;display:block;white-space:nowrap;pointer-events:none;text-shadow:none;font-synthesis:none}.dedication-to{color:#c9a34d;font:italic 700 65px "Fraunces",Georgia,serif;line-height:1}.dedication-saying{color:#79516b;font:500 26px Georgia,serif;line-height:1.1;transform-origin:left top}.name{position:absolute;background:transparent;border:0;color:#b82160;caret-color:#b82160;outline-offset:4px;padding:0;min-width:0;box-shadow:none;text-shadow:none;font:italic 700 65px "Fraunces",Georgia,serif;line-height:1}.name::placeholder{color:transparent}.stage.is-recording .dedication-to,.stage.is-recording .dedication-saying,.stage.is-recording .name{visibility:hidden}.rotate{display:none}.settings{max-width:800px;margin:auto;padding:56px 24px 80px}.settings h1{font:italic 700 42px Georgia;margin:0 0 28px}.options{display:grid;grid-template-columns:repeat(auto-fit,minmax(205px,1fr));gap:12px}.options label{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:48px;padding:11px 14px;background:#382831;border-radius:14px}.options input{accent-color:#ffbbcd}.options select{border:0;background:#382831}.settings p{color:#e5c4cf;line-height:1.55}.download[hidden]{display:none}.download{display:inline-block;margin-top:12px}
 @media(orientation:portrait){.stage{height:auto;aspect-ratio:16/9;margin-top:0}.rotate{display:block;text-align:center;padding:9px;font-size:.75rem;background:#382831}.controls{bottom:8px}.status{bottom:51px}.pill{padding:7px 11px}.settings{padding-top:36px}}
 </style>
 </head>
@@ -17,7 +17,9 @@
 <main class="stage" id="stage">
   <video id="camera" muted playsinline></video>
   <canvas id="canvas" width="1920" height="1080" aria-label="Landscape camera and love letter preview"></canvas>
+  <span id="dedicationTo" class="dedication-to">To:</span>
   <input id="name" class="name" aria-label="English name" placeholder="English name" maxlength="32" autocomplete="off" spellcheck="false">
+  <span id="dedicationSaying" class="dedication-saying"></span>
   <p id="status" class="status" role="status"></p>
   <div class="controls">
     <button id="cameraButton" class="pill">Open camera</button>
@@ -41,7 +43,8 @@
 <script type="module">
 const get = id => document.getElementById(id);
 const camera = get('camera'), canvas = get('canvas'), stage = get('stage');
-const name = get('name'), status = get('status'), record = get('record'), download = get('download');
+const name = get('name'), toLabel = get('dedicationTo'), sayingLabel = get('dedicationSaying');
+const status = get('status'), record = get('record'), download = get('download');
 const cameraButton = get('cameraButton');
 const ctx = canvas.getContext('2d', {alpha:false});
 const words = [
@@ -80,12 +83,26 @@ function layout() {
   }
   const sx = stage.clientWidth / W;
   const sy = stage.clientHeight / H;
-  Object.assign(name.style, {
-    left:`${167 * sx}px`,
-    top:`${43 * sy}px`,
-    width:`${389 * sx}px`, height:`${69 * sy}px`,
-    fontSize:`${Math.max(16, 45 * sy)}px`
+  Object.assign(toLabel.style, {
+    left:`${55 * sx}px`, top:`${43 * sy}px`,
+    fontSize:`${65 * sy}px`
   });
+  Object.assign(name.style, {
+    left:`${167 * sx}px`, top:`${40 * sy}px`,
+    width:`${389 * sx}px`, height:`${76 * sy}px`,
+    fontSize:`${65 * sy}px`
+  });
+  const sayingSize = 26 * sy;
+  Object.assign(sayingLabel.style, {
+    left:`${57 * sx}px`, top:`${121 * sy}px`,
+    fontSize:`${sayingSize}px`,
+    transform:'none'
+  });
+  const actualWidth=sayingLabel.getBoundingClientRect().width;
+  const maxWidth=487 * sx;
+  if(actualWidth>maxWidth && maxWidth>0) {
+    sayingLabel.style.transform=`scaleX(${maxWidth/actualWidth})`;
+  }
 }
 new ResizeObserver(layout).observe(stage);
 
@@ -206,19 +223,23 @@ try { previousSaying=sessionStorage.getItem('letter-saying'); } catch {}
 const choices = sayings.filter(line=>line!==previousSaying);
 const saying = choices[Math.floor(Math.random()*choices.length)];
 try { sessionStorage.setItem('letter-saying',saying); } catch {}
+sayingLabel.textContent=saying;
+layout();
 
 function dedication(options) {
-  // Keep the dedication on the camera itself, without the former white card.
+  // Real font glyphs, fully opaque and shadow-free. This canvas pass is only
+  // used when recording; the live preview uses crisp selectable HTML text.
   ctx.save();
-  ctx.shadowColor='rgba(255,255,255,.80)';
-  ctx.shadowBlur=7;
-  ctx.font='800 65px Arial, sans-serif';
-  ctx.fillStyle='#7042b7'; // Bright violet for "To:"; legible on white.
+  ctx.shadowColor='transparent';
+  ctx.shadowBlur=0;
+  ctx.globalAlpha=1;
+  ctx.font='italic 700 65px "Fraunces", Georgia, serif';
+  ctx.fillStyle='#c9a34d';
   ctx.fillText('To:',55,99);
-  ctx.fillStyle='#b82160'; // Distinct vivid raspberry for the name.
+  ctx.fillStyle='#b82160';
   ctx.fillText(options.name,167,99,389);
-  ctx.fillStyle='#68445b';
-  ctx.font='500 26px Arial, sans-serif';
+  ctx.fillStyle='#79516b';
+  ctx.font='500 26px Georgia, serif';
   ctx.fillText(saying,57,149,487);
   ctx.restore();
 }
@@ -245,21 +266,25 @@ function lips(x,y,scale,tilt=0) {
   ctx.restore();
 }
 
-let sound, mix;
+let sound, mix, clipsLoading;
 const clips = new Map();
 async function initSound() {
   const Audio = window.AudioContext || window.webkitAudioContext;
-  if (!Audio) return;
+  if (!Audio) throw new Error('AudioContext is unavailable');
   if (!sound) {
-    sound=new Audio();
+    sound=new Audio({sampleRate:48000});
+    // One continuously live audio track receives all word/charm effects.
     mix=sound.createMediaStreamDestination();
   }
   await sound.resume();
-  if (clips.size === Object.keys(spokenAudio).length) return;
-  await Promise.all(Object.entries(spokenAudio).map(async ([key,base64])=>{
-    const bytes=Uint8Array.from(atob(base64),character=>character.charCodeAt(0));
-    clips.set(key,await sound.decodeAudioData(bytes.buffer));
-  }));
+  if (!clipsLoading) {
+    clipsLoading=Promise.all(Object.entries(spokenAudio).map(async ([key,base64])=>{
+      const bytes=Uint8Array.from(atob(base64),character=>character.charCodeAt(0));
+      clips.set(key,await sound.decodeAudioData(bytes.buffer));
+    })).catch(error=>{clipsLoading=null;throw error;});
+  }
+  await clipsLoading;
+  if (!mix.stream.getAudioTracks().length) throw new Error('Recording audio track is unavailable');
 }
 
 function playClip(key) {
@@ -450,7 +475,7 @@ function draw(now) {
     ctx.fillText('A little love letter, made with both hands.',W/2,589,W-280);
     ctx.textAlign='start';
   }
-  dedication(options);
+  if (mode==='recording') dedication(options);
   if (options.stickers) decorate();
   targets.length=0;
   const visible=[...hands.values()];
@@ -535,6 +560,7 @@ function finishRecording() {
 
 function unlock() {
   mode='idle';
+  stage.classList.remove('is-recording');
   settings=null;
   name.readOnly=false;
   cameraButton.disabled=false;
@@ -544,41 +570,72 @@ function unlock() {
   layout();
 }
 
-function startRecording() {
+// MP4 MUST explicitly request H.264 + AAC. A generic "video/mp4" can
+// contain Opus audio in Chromium, which some MP4 players cannot decode.
+const recordingTypes=[
+  'video/mp4;codecs="avc1.42E01E,mp4a.40.2"',
+  'video/mp4;codecs="avc1.424028,mp4a.40.2"',
+  'video/mp4;codecs="avc1,mp4a.40.2"',
+  'video/webm;codecs="vp8,opus"',
+  'video/webm;codecs="vp9,opus"',
+  'video/webm'
+];
+async function startRecording() {
   try {
+    await initSound();
+    // Ensure the same genuine typeface is present in the recorded canvas.
+    await document.fonts.load('italic 700 65px "Fraunces"').catch(()=>{});
+    if(mode!=='countdown') return; // User cancelled while preparing.
     recordingStream=canvas.captureStream(30);
-    for (const track of mix?.stream.getAudioTracks() ?? []) recordingStream.addTrack(track.clone());
-    const mimeType=['video/mp4','video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm']
-      .find(type=>MediaRecorder.isTypeSupported(type));
-    recorder=new MediaRecorder(recordingStream,{...(mimeType && {mimeType}),videoBitsPerSecond:9000000});
+    const track=mix.stream.getAudioTracks()[0];
+    if(!track || track.readyState!=='live') throw new Error('Audio track is not live');
+    recordingStream.addTrack(track.clone());
+    let chosenType;
+    for(const mimeType of recordingTypes) {
+      if(!MediaRecorder.isTypeSupported(mimeType)) continue;
+      try {
+        recorder=new MediaRecorder(recordingStream,{
+          mimeType, videoBitsPerSecond:9000000, audioBitsPerSecond:160000
+        });
+        chosenType=mimeType;
+        break;
+      } catch {} // Try the next supported codec/container pair.
+    }
+    if(!recorder) throw new Error('No compatible recording encoder');
     const chunks=[];
     recorder.ondataavailable=event=>{if(event.data.size) chunks.push(event.data);};
     recorder.onerror=()=>{status.textContent='Recording failed. Try again.';};
     recorder.onstop=()=>{
+      const actualType=recorder.mimeType || chosenType;
+      const isMp4=/^video\/mp4/i.test(actualType);
       unlock();
       if (!chunks.length) { status.textContent='No video was captured. Try again.'; return; }
-      const type=recorder.mimeType || chunks[0].type;
-      const file=new Blob(chunks,{type});
+      const file=new Blob(chunks,{type:isMp4?'video/mp4':'video/webm'});
       if(downloadUrl) URL.revokeObjectURL(downloadUrl);
       downloadUrl=URL.createObjectURL(file);
       download.href=downloadUrl;
-      download.download='love-at-your-fingertips.'+(type.includes('mp4')?'mp4':'webm');
+      download.download='love-at-your-fingertips.'+(isMp4?'mp4':'webm');
       download.style.display='inline-block';
       download.hidden=false;
-      status.textContent='Video ready. Downloading…';
+      status.textContent=isMp4
+        ? 'MP4 with H.264 video and AAC audio is ready. Downloading…'
+        : 'This browser cannot encode MP4 + AAC; downloaded WebM with Opus audio instead.';
       download.click();
     };
     sceneTime=performance.now();
     recorder.start(500);
     mode='recording';
+    stage.classList.add('is-recording');
     record.textContent='■ Stop recording';
-    status.textContent='Recording';
-  } catch {
+    status.textContent=chosenType.startsWith('video/mp4')
+      ? 'Recording MP4 · H.264 + AAC'
+      : 'Recording WebM · MP4/AAC unavailable in this browser';
+  } catch(error) {
+    console.error('Could not start recording with audio:',error);
     unlock();
-    status.textContent='Recording could not start in this browser.';
+    status.textContent='Recording audio/encoding could not start. Reopen this page and try again.';
   }
 }
-
 record.addEventListener('click',()=>{
   if(mode==='recording') {finishRecording(); return;}
   if(mode==='countdown') {
@@ -587,7 +644,8 @@ record.addEventListener('click',()=>{
     status.textContent='';
     return;
   }
-  initSound().catch(()=>{});
+  // Start/resume Web Audio during the user gesture so effects are captured.
+  initSound().catch(error=>console.error('Sound preparation failed:',error));
   settings=readSettings();
   mode='countdown';
   name.readOnly=true;
