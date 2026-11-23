@@ -1,0 +1,17 @@
+name: Temporary Private Arc Reader Transfer Test
+on:
+  push:
+    branches: [arc-reader-transfer-2211]
+    paths: [.github/workflows/arc-transfer.yml]
+permissions: {contents: read}
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Make small test payload
+        run: printf 'test artifact transfer works\n' > /tmp/arc-probe.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: arc-transfer-probe
+          path: /tmp/arc-probe.txt
+          retention-days: 1
