@@ -146,7 +146,7 @@ test('cards accumulate, survive a closed-eye pause and retire together after a t
   assert.equal(s.orbitDone,true);
   step([],face(),210);step([],face(),cardFade+60);
   assert.equal(s.snapshot(now()).windows,0);
-  tap(560,267);assert.equal(s.phase,8);assert.equal(s.eye,1);
+  step([[560,267,'point']]);assert.equal(s.phase,8);assert.equal(s.eye,1);
   for(let i=0;i<8;i++)step([[650,305,'palm','right']]);
   assert.equal(s.eye,0);
   for(let i=0;i<6;i++)step([[560,267,'point']]);
@@ -155,6 +155,42 @@ test('cards accumulate, survive a closed-eye pause and retire together after a t
   assert.equal(s.phase,0);
 });
 
+test('pointing while four cards fade immediately queues the flower finale',()=>{
+  const {s,step,now}=setup();s.enter(7,0,'');
+  s.cards=[0,1,2,3].map(index=>({index,t:0}));
+  s.cardsExit=now()+50;
+  step([[560,267,'point']],face(),80);
+  assert.equal(s.phase,7);assert.equal(s.snapshot(now()).windows,4);
+  step([],face(),cardFade-80+50);
+  assert.equal(s.phase,8);
+  assert.equal(s.eye,1);
+  assert.equal(s.snapshot(now()).windows,0);
+});
+test('pointing after cards vanish needs no extra tap or face-proximity check',()=>{
+  const {s,step,now}=setup();s.enter(7,0,'');
+  s.cards=[0,1,2,3].map(index=>({index,t:0}));
+  s.cardsExit=now()+50;
+  step([],face(),cardFade+80);
+  assert.equal(s.snapshot(now()).windows,0);
+  assert.equal(s.phase,7);
+  step([[760,360,'point']]);
+  assert.equal(s.phase,8);
+  assert.equal(s.eye,1);
+});
+test('stale index gestures do not auto-trigger after release',()=>{
+  const {s,step,now}=setup();s.enter(7,0,'');
+  s.cardsExit=now()+50;
+  step([[560,267,'point']],face(),70);
+  step([],face(),1150);
+  assert.equal(s.phase,7);
+  step([[460,267,'point']]);
+  assert.equal(s.phase,8);
+});
+test('flowers fade in within 150ms and the old white-mist effect stays absent',()=>{
+  const fx=fs.readFileSync(require.resolve('../effects.js'),'utf8');
+  assert.match(fx,/clamp\(\(age\+40\)\/150,0,1\)/);
+  assert.doesNotMatch(fx,/whiteBackdrop/);
+});
 test('clipped fingertips defer flocks and reset readiness until two full frames',()=>{
   const {s,step}=setup();s.enter(5,0,'');
   step([[180,47,'palm']]);step([[180,47,'palm']]);
