@@ -66,8 +66,8 @@ const DreamGestures = (() => {
       this.sweeps=[];this.sweepDistance=0;this.ripples=[];this.cards=[];this.cardsExit=-Infinity;this.orbit=new Map();this.orbitDone=false;this.eye=0;this.palmHeld=false;this.lastEndPalm=-Infinity;
       this.peaks=[0,0];this.lastPeak=-Infinity;this.groups=new Map();this.frame=null;
       this.frameSeen=-Infinity;this.frameSince=null;this.texture=-1;this.frames=0;
-      this.closedAt=this.claspAt=this.motionAt=-Infinity;this.face=null;
-      this.wingHeld=-Infinity;this.flashAt=Infinity;this.endPalms=false;this.neutralAt=null;
+      this.closedAt=this.claspAt=-Infinity;this.face=null;
+      this.wingTurnAt=this.wingLastHand=-Infinity;this.flashAt=Infinity;this.endPalms=false;this.neutralAt=null;
       this.handFrameStreak=0;this.lastHandFrame=-Infinity;this.lastDual=-Infinity;this.dualSamples=0;this.lastCard=-Infinity;
     }
     enter(phase,t,reason) {
@@ -130,11 +130,8 @@ const DreamGestures = (() => {
       }
     }
     update(hands,face,t,sensitivity=1) {
-      const lastFace=this.face;
       this.face=face;
       if(face?.closed) this.closedAt=t;
-      if(lastFace&&face&&(distance(face,lastFace)>face.width*.012||
-        Math.abs(face.roll-lastFace.roll)>.019)) this.motionAt=t;
       this.hands=hands;
       const complete=hands.length>0&&hands.every(handInFrame);
       this.handFrameStreak=complete?(t-this.lastHandFrame<245?this.handFrameStreak+1:1):0;
@@ -144,7 +141,6 @@ const DreamGestures = (() => {
       const clasp=hands.length===2&&hands.every(h=>h.clasp&&(!face||
         Math.abs(h.center.y-face.y)<face.height*1.40));
       if(clasp) this.claspAt=t;
-      if(clasp&&hands.some(h=>h.velocity>.045)) this.motionAt=t;
       const taps=[];
       for(const h of hands) {
         const track=this.tracks.get(h.label)??{};
@@ -185,13 +181,26 @@ const DreamGestures = (() => {
         else this.reason='已接受食指点触';
         for(const hit of taps) this.ripples.push({...hit,t});
       }
-      if(phase===2&&t-this.claspAt<440&&t-this.closedAt<440&&t-this.motionAt<330) {
-        this.enter(3,t,'已接受双手合拢、闭眼和晃动');
-        this.wingHeld=t;
+      if(phase===2) {
+        if(clasp&&t-this.closedAt<250){
+          const anchors=face?[...hands,{label:'face',center:face,scale:face.width}]:hands;
+          this.updateOrbit(anchors);
+          if(this.orbitDone)this.wingTurnAt=t;
+        }else if(!this.orbitDone&&t-Math.min(this.closedAt,this.claspAt)>420||
+          t-this.wingTurnAt>5200&&this.orbitDone){
+          this.orbit.clear();this.orbitDone=false;
+        }
+        if(this.orbitDone&&framedPalms.length===2){
+          this.enter(3,t,'转圈后双掌张开，羽翼保持至手指出画');
+          this.wingLastHand=t;
+          this.orbit.clear();this.orbitDone=false;
+        }
       }
       if(phase===3) {
-        if(t-this.claspAt<340&&t-this.closedAt<440) this.wingHeld=t;
-        if(t-this.entered>520&&t-this.wingHeld>320&&this.flashAt===Infinity) this.flashAt=t;
+        const fingerVisible=hands.some(h=>h.points.slice(1).some(p=>
+          p.x>=0&&p.x<=960&&p.y>=0&&p.y<=540));
+        if(fingerVisible&&this.flashAt===Infinity)this.wingLastHand=t;
+        if(t-this.wingLastHand>260&&this.flashAt===Infinity)this.flashAt=t+280;
         if(t-this.flashAt>=720) this.enter(4,t,'等待双手成框');
       }
       if(phase===4||this.phase===4) {
@@ -262,7 +271,8 @@ const DreamGestures = (() => {
         corners:this.frame,texture:this.texture,groups:this.groups.size,
         candidates:this.hands.map(h=>({hand:h.label,palm:h.palm,point:h.point,pinch:h.pinch,
           anchor:h.center,tip:h.points[8]})),
-        wait:this.phase===1||this.phase===2?'需要食指短点触；悬停、双指和摊掌不计':
+        wait:this.phase===1?'需要食指短点触；悬停、双指和摊掌不计':
+          this.phase===2?(this.orbitDone?'转圈已确认，请张开双掌':'可继续点出水波，或闭眼捏手转圈准备羽翼'):
           this.phase===4?'需要四角稳定成凸四边形':
           this.phase===5?'需要食指在脸侧短点触':
           this.phase===6?'逐次点脸，集齐后闭眼捏手转圈':

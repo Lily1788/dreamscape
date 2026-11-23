@@ -241,7 +241,7 @@ const DreamEffects = (() => {
     }
     wing(s,t) {
       const {ctx,w,h}=this, image=get('wing-cutout'),f=s.face;
-      const a=clamp((t-s.entered)/440,0,1)*(1-clamp((t-s.flashAt)/160,0,1));
+      const a=clamp((t-s.entered)/440,0,1)*(1-clamp((t-s.flashAt+280)/280,0,1));
       ctx.save();ctx.globalAlpha=a;
       ctx.fillStyle='#45689bbf';ctx.fillRect(0,0,w,h);
       ctx.fillStyle=radial(ctx,w*.49,h*.45,w*.69,'#b0c7ee59','#252d5ea5');ctx.fillRect(0,0,w,h);
@@ -406,26 +406,25 @@ const DreamEffects = (() => {
     }
     monocle(s,t) {
       const {ctx}=this,f=s.face,eye=f.eyes[s.eye];
-      const w=f.width*.37,h=f.height*.19,side=s.eye===0?-1:1;
+      const w=f.width*.34,h=f.height*.155,side=s.eye===0?-1:1;
       ctx.save();ctx.translate(eye.x,eye.y);ctx.rotate(f.roll);ctx.scale(side,1);
-      ctx.globalAlpha=clamp((t-s.entered)/160,0,1);
-      const chamfer=w*.12;
-      const shape=(inset)=>[
-        [-w/2+inset,-h/2+chamfer],[ -w/2+chamfer,-h/2+inset],
-        [w/2-chamfer,-h/2+inset],[w/2-inset,-h/2+chamfer],
-        [w/2-inset,h/2-chamfer],[w/2-chamfer,h/2-inset],
-        [-w/2+chamfer,h/2-inset],[-w/2+inset,h/2-chamfer]
-      ].map(([x,y])=>({x,y}));
-      curve(ctx,shape(0),true);ctx.fillStyle='#24495f34';ctx.fill();
-      ctx.strokeStyle='#162e43';ctx.lineWidth=2.8;ctx.stroke();
-      ctx.strokeStyle='#cdfaff';ctx.lineWidth=1;ctx.stroke();
-      curve(ctx,shape(3),true);ctx.strokeStyle='#83d8ef8a';ctx.lineWidth=.65;ctx.stroke();
-      curve(ctx,[{x:w*.49,y:-h*.21},{x:w*.70,y:-h*.42},{x:w*.81,y:-h*.42}]);
-      ctx.strokeStyle='#c9f6ff';ctx.lineWidth=1.4;ctx.stroke();
-      ctx.fillStyle='#98e9ff';ctx.fillRect(w*.79,-h*.52,w*.13,h*.21);
-      for(let i=0;i<5;i++)ctx.fillRect(-w*.30+i*w*.15,h*.54,1.2,i===2?4:2);
-      const y=reducedMotion.matches?0:(.5+.5*Math.sin(t/195)-.5)*h*.62;
-      ctx.fillStyle='#a9f8ff75';ctx.fillRect(-w*.36,y,w*.72,1);
+      ctx.globalAlpha=clamp((t-s.entered)/190,0,1);
+      const x=w*.5,y=h*.5,corner=w*.085;
+      const lens=[[-x,-y+corner],[-x+corner,-y],[x-corner,-y],[x,-y+corner],
+        [x,y-corner],[x-corner,y],[-x+corner,y],[-x,y-corner]].map(([x,y])=>({x,y}));
+      const glaze=ctx.createLinearGradient(-x,-y,x,y);
+      glaze.addColorStop(0,'#b5d8ec25');glaze.addColorStop(.58,'#88bfd70a');
+      glaze.addColorStop(1,'#a3d1e51c');
+      curve(ctx,lens,true);ctx.fillStyle=glaze;ctx.fill();
+      ctx.strokeStyle='#acd7eb60';ctx.lineWidth=.65;ctx.stroke();
+      ctx.strokeStyle='#e6faff9c';ctx.lineWidth=.9;
+      for(const points of [lens.slice(0,2),lens.slice(3,5),lens.slice(5,7)]){
+        curve(ctx,points);ctx.stroke();
+      }
+      curve(ctx,[{x,y:-y*.34},{x:x+w*.17,y:-y*.72},{x:x+w*.28,y:-y*.72}]);
+      ctx.strokeStyle='#b4e0f078';ctx.lineWidth=.65;ctx.stroke();
+      ctx.fillStyle='#d0eef5a6';ctx.fillRect(x+w*.28,-y*.75,2,1);
+      for(let i=0;i<4;i++)ctx.fillRect(-w*.16+i*w*.074,y+2,.65,i===0?2.5:1.4);
       ctx.restore();
     }
     hands(s,t) {
