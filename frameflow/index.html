@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0b1017">
-<title>FRAMEFLOW / V2.1 — 导演预演工作台</title>
+<title>FRAMEFLOW 3 — 电影预演导演台</title>
 <style>
 :root{--bg:#090e15;--panel:#111922;--panel2:#151e28;--stroke:rgba(181,207,225,.115);--line:rgba(184,205,222,.08);--txt:#edf5f6;--muted:#8495a3;--dim:#536676;--mint:#bbf6de;--mint2:#8ee5c8;--violet:#b7a2f9;--amber:#efc98c;--red:#f5a6a9;--radius:20px;--ease:cubic-bezier(.2,.85,.22,1)}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;height:100%;overflow:hidden}body{font:13px/1.48 Inter,"SF Pro Display","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--txt);letter-spacing:.05px}button,input,select{font:inherit}button{cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed}button:focus-visible,input:focus-visible{outline:2px solid var(--mint);outline-offset:2px}button{transition:background .2s,border-color .2s,transform .26s var(--ease),color .2s,box-shadow .3s}button:active{transform:scale(.957)}.app{height:100dvh;min-height:580px;display:flex;flex-direction:column;isolation:isolate;position:relative;overflow:hidden}.app:before{content:"";position:absolute;z-index:-1;top:-300px;left:28%;width:600px;height:510px;background:radial-gradient(ellipse,rgba(70,132,129,.09),transparent 70%);pointer-events:none}.topbar{height:72px;flex-shrink:0;display:flex;align-items:center;gap:20px;padding:0 27px;border-bottom:1px solid var(--line);background:rgba(11,16,24,.78);backdrop-filter:blur(26px);z-index:30}.logo{display:flex;align-items:center;gap:13px;min-width:246px}.mark{width:35px;height:35px;border:1px solid rgba(203,255,228,.34);border-radius:12px;background:linear-gradient(147deg,rgba(182,252,214,.17),rgba(149,180,250,.04));display:grid;place-items:center;box-shadow:inset 0 0 22px #ddfff40b,0 3px 25px #a7ffd808}.mark svg{width:21px}.brand{font-weight:750;font-size:17px;letter-spacing:1.4px;line-height:1.1}.brand small{font-weight:500;color:#8a9bac;letter-spacing:2.8px;font-size:8px;display:block;margin-top:5px}.crumb{color:#677888;white-space:nowrap}.crumb strong{color:#c5d1d6;font-weight:500}.top-center{display:flex;align-items:center;gap:10px;flex:1;justify-content:center}.top-notice{display:flex;align-items:center;gap:9px;padding:8px 13px;color:#abbac3;border:1px solid var(--line);border-radius:99px;background:rgba(255,255,255,.018);font-size:11px;white-space:nowrap}.live-dot{width:6px;height:6px;border-radius:50%;background:#edae84;box-shadow:0 0 0 4px rgba(233,176,116,.1)}.live-dot.ok{background:#a6eac8;box-shadow:0 0 0 4px #9ef7c111}.top-actions{display:flex;align-items:center;gap:9px;margin-left:auto}.btn{height:34px;padding:0 13px;border:1px solid rgba(190,218,228,.13);border-radius:11px;background:rgba(255,255,255,.025);color:#cfdbdf;display:inline-flex;justify-content:center;align-items:center;gap:7px;white-space:nowrap}.btn:hover{background:rgba(255,255,255,.068);border-color:rgba(182,217,223,.3)}.btn.main{border-color:rgba(194,255,223,.28);background:linear-gradient(140deg,#caf7e1,#a4dfd1);color:#122d2b;font-weight:700;box-shadow:0 5px 24px #91fcd216}.btn.main:hover{box-shadow:0 7px 28px #a8ffd52c}.btn.ghost{border:none;background:transparent}.btn.icon{width:34px;padding:0}.btn svg,.icon-mini{width:15px;height:15px;flex-shrink:0}.frame{flex:1;display:grid;grid-template-columns:248px minmax(0,1fr) 284px;min-height:0;overflow:hidden}.rail{background:linear-gradient(175deg,rgba(20,29,39,.68),rgba(14,21,30,.92));border-right:1px solid var(--line);min-height:0;display:flex;flex-direction:column;overflow:auto;scrollbar-width:thin;scrollbar-color:#253544 transparent}.rail.right{border-left:1px solid var(--line);border-right:0;background:linear-gradient(170deg,rgba(19,28,38,.82),rgba(12,20,29,.9))}.rail-inner{padding:25px 16px 18px}.eyebrow{color:#728895;letter-spacing:2.05px;font-size:10px;font-weight:700}.section-head{display:flex;justify-content:space-between;align-items:center;margin:20px 0 10px}.section-head h3{font-size:12px;font-weight:700;letter-spacing:.5px;margin:0}.tiny{font-size:10px;color:var(--dim);font-variant-numeric:tabular-nums}.scene-card{position:relative;overflow:hidden;background:linear-gradient(125deg,rgba(38,66,72,.5),rgba(37,43,62,.48));border:1px solid rgba(166,229,212,.17);border-radius:16px;padding:15px 14px 13px;margin-top:14px}.scene-card:after{content:"";position:absolute;width:140px;height:140px;right:-48px;top:-58px;border:1px solid #b6fada22;border-radius:50%;box-shadow:0 0 0 24px #b6fada08,0 0 0 55px #b6fada08;pointer-events:none}.scene-num{font:600 9px/1.2 monospace;color:#a9ebd6;letter-spacing:2px}.scene-name{font-weight:650;font-size:16px;margin:14px 0 4px;line-height:1.22}.scene-sub{font-size:10px;color:#9bacb4}.cast-list{display:flex;flex-direction:column;gap:6px}.cast-item{width:100%;border:1px solid transparent;padding:10px 9px;display:flex;gap:10px;align-items:center;background:transparent;border-radius:12px;text-align:left;color:var(--txt)}.cast-item:hover{background:rgba(244,255,251,.04)}.cast-item.selected{border-color:rgba(185,247,226,.18);background:linear-gradient(100deg,rgba(182,255,223,.095),rgba(156,200,245,.025));box-shadow:inset 0 1px rgba(224,255,242,.03)}.avatar{width:31px;height:31px;flex:0 0 31px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-weight:750;font-size:12px;color:#13222b;box-shadow:inset 0 1px #ffffff38}.cast-meta{flex:1;min-width:0}.cast-name{font-size:12px;font-weight:630}.cast-pos{font-size:10px;color:#687f8d;margin-top:2px;font-variant-numeric:tabular-nums}.cast-item .arr{font-size:14px;color:#576977}.addline{width:100%;height:34px;border:1px dashed rgba(173,202,216,.17);border-radius:10px;background:transparent;color:#8fa9ae;margin-top:9px}.addline:hover{background:#9cdec40c;color:var(--mint);border-color:#a1e5c255}.shot-list{display:flex;flex-direction:column;gap:6px}.shot-item{display:flex;gap:10px;align-items:center;padding:10px 10px;border:1px solid transparent;border-radius:11px;color:#d4e0e5;background:transparent;width:100%;text-align:left}.shot-item.active{border-color:#b9e9dc24;background:rgba(181,250,228,.064)}.shot-n{font:650 11px monospace;color:#a6dccb;align-self:center}.shot-item strong{font-size:11px;font-weight:600;display:block}.shot-item small{font-size:10px;color:#6f8897;display:block;margin-top:2px}.shot-play{margin-left:auto;color:#a9d9c4;opacity:.7}.tip-card{padding:12px 13px;margin-top:25px;border-top:1px solid var(--line);color:#8aa0aa;font-size:11px;line-height:1.72}.tip-card span{display:inline-block;padding:3px 6px;border-radius:5px;border:1px solid #a9c9d21d;background:#ffffff08;color:#b6c3c8;font:10px monospace;margin:0 2px}.workspace{min-height:0;display:flex;flex-direction:column;min-width:0;padding:25px 25px 17px;gap:14px}.workspace-header{display:flex;align-items:flex-end;gap:15px;justify-content:space-between}.headline .sup{font-size:10px;letter-spacing:1.8px;color:#77a69f;font-weight:700}.headline h1{font-size:23px;letter-spacing:-.8px;font-weight:660;line-height:1.2;margin:6px 0 7px}.headline p{font-size:11px;color:#8598a4;margin:0}.mode-tabs{display:flex;align-items:center;gap:3px;padding:4px;border-radius:12px;background:#121d27;border:1px solid var(--line);flex-shrink:0}.mode-tab{border:0;background:transparent;color:#8a9eab;border-radius:9px;padding:7px 13px;font-size:11px}.mode-tab.active{background:linear-gradient(180deg,#283e43,#24353c);color:#d3fae8;box-shadow:0 1px 12px #080d1490,0 1px inset #ffffff13}.metrics{display:flex;gap:8px;min-height:60px}.metric{flex:1;display:flex;align-items:center;gap:12px;min-width:0;border:1px solid var(--line);border-radius:13px;background:linear-gradient(120deg,#1b28324a,#141e2840);padding:12px 14px}.metric .mi{width:31px;height:31px;display:grid;place-items:center;border:1px solid rgba(175,219,214,.12);border-radius:10px;color:#b3d9cd;background:#a2fadd08}.metric .mi svg{width:16px;height:16px}.metric small{display:block;color:#6e8492;font-size:10px;margin-bottom:1px}.metric strong{font-weight:650;font-size:14px;white-space:nowrap}.metrics .unit{color:#7f939c;font-size:10px;font-weight:400}.stage-layout{flex:1;min-height:240px;display:grid;grid-template-columns:1fr 1.08fr;gap:13px}.panel-view{min-height:0;min-width:0;position:relative;border:1px solid rgba(158,195,207,.16);border-radius:18px;overflow:hidden;background:#0e1720;box-shadow:0 16px 45px #02060b3a,inset 0 1px #fff1}.panel-view:after{content:"";pointer-events:none;position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 75px #02060d45}.panel-view canvas{display:block;width:100%;height:100%;touch-action:none}.stage-top{pointer-events:none;position:absolute;z-index:4;top:15px;left:17px;right:17px;display:flex;gap:8px;justify-content:space-between;align-items:flex-start}.stage-title{font-weight:650;font-size:11px;display:flex;gap:7px;align-items:center;color:#e0efee}.stage-title .dot{width:6px;height:6px;background:#92edc8;border-radius:100%;box-shadow:0 0 14px #95f9b878}.stage-sub{font:9px monospace;color:#748c99;letter-spacing:1px;margin-top:4px}.stage-tag{color:#acc6c8;font:9px monospace;border:1px solid #b4e3d52b;padding:5px 8px;border-radius:7px;background:#111e26ab}.canvas-float{position:absolute;z-index:5;bottom:15px;right:15px;display:flex;gap:6px}.floatbtn{border:1px solid #bcdae329;border-radius:9px;color:#c1d7da;background:#15212bbd;backdrop-filter:blur(15px);width:30px;height:30px;display:grid;place-items:center;font-size:16px;line-height:1}.floatbtn:hover{background:#2b4144;color:white}.canvas-left-note{pointer-events:none;position:absolute;z-index:4;bottom:15px;left:15px;color:#6e8d9a;font:9px monospace;letter-spacing:.3px}.cam-mode{display:flex;gap:6px}.view-switch{pointer-events:auto;display:flex;gap:3px;padding:3px;border-radius:8px;background:#0a121abf;border:1px solid #d4f9e122}.view-switch button{border:0;background:transparent;padding:5px 7px;color:#829ba4;font:10px sans-serif;border-radius:6px}.view-switch button.active{background:#a6ddcc24;color:#c5fbe2}.timeline{height:116px;min-height:116px;display:flex;flex-direction:column;gap:10px}.tl-head{display:flex;justify-content:space-between;align-items:center}.tl-head strong{font-size:11px;font-weight:680}.tl-head small{font:10px monospace;color:#6b8291}.timeline-track{display:flex;gap:9px;overflow-x:auto;scrollbar-width:thin;scrollbar-color:#33404b transparent;padding-bottom:5px}.tl-card{flex:0 0 175px;height:76px;display:flex;align-items:stretch;gap:10px;border-radius:12px;padding:9px;cursor:pointer;background:#15222b;border:1px solid #a4c7c71c;color:#d9e9e6;text-align:left}.tl-card.active{border-color:#b1efd76b;background:linear-gradient(130deg,#233b39,#1c2b32);box-shadow:inset 0 0 0 1px #c6ffe409}.tl-thumb{width:62px;flex:0 0 62px;border-radius:8px;background:radial-gradient(circle at 48% 27%,#a4f5d044,transparent 30%),linear-gradient(150deg,#1d4b4b,#172c40);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}.tl-thumb:before{content:"";position:absolute;width:70px;height:24px;left:-7px;bottom:5px;transform:skewY(-16deg);border-top:1px solid #c9ffe65c;box-shadow:0 -12px 0 -11px #b3ffdb88,0 -24px 0 -23px #b3ffdb55}.tl-thumb svg{position:relative;z-index:1;width:22px;color:#d6fff0;opacity:.86}.tl-copy{display:flex;flex-direction:column;justify-content:center;overflow:hidden}.tl-copy small{font:9px monospace;color:#8dbaa9}.tl-copy strong{font-size:11px;margin:4px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tl-copy em{font:normal 9px monospace;color:#778f97}.tl-add{flex:0 0 54px;height:76px;border:1px dashed #9fcfc633;border-radius:12px;background:#171e2744;color:#9dc6bc;font-size:21px}.tl-add:hover{background:#afdac014}.right .rail-inner{padding:25px 19px}.inspector-top{display:flex;justify-content:space-between;align-items:center}.inspector-title{margin:8px 0 5px;font-size:20px;font-weight:670;letter-spacing:-.4px}.inspector-sub{font:10px monospace;color:#76919e;margin-bottom:23px}.prop-group{border-top:1px solid #b4c9d011;padding-top:19px;margin-top:19px}.prop-header{display:flex;align-items:center;justify-content:space-between;color:#bccbd0;font-weight:650;font-size:11px;margin-bottom:12px}.prop-label{font-size:10px;color:#899ca8;margin-bottom:7px;display:flex;justify-content:space-between;align-items:center}.prop-label b{color:#d8e8e8;font:600 10px monospace}.field-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}.field{padding:10px 11px;border:1px solid #beced320;border-radius:10px;background:#0d1720;min-width:0}.field label{display:block;color:#748e99;font-size:9px;margin-bottom:4px}.field input{font:600 13px monospace;color:#dceeea;background:transparent;border:0;outline:0;width:100%;height:20px}.field:focus-within{border-color:#a9e5d65c}.slider-row{margin:16px 0 4px}.range{width:100%;appearance:none;-webkit-appearance:none;height:4px;border:0;border-radius:99px;outline:none;background:linear-gradient(90deg,#a5e8d0 0 var(--pct,45%),#293845 var(--pct,45%) 100%);cursor:pointer;margin:8px 0 4px}.range::-webkit-slider-thumb{appearance:none;width:13px;height:13px;border-radius:50%;background:#d7ffeb;border:3px solid #638e85;box-shadow:0 0 0 3px #a6fad112}.range::-moz-range-thumb{width:8px;height:8px;border-radius:50%;background:#d7ffeb;border:3px solid #638e85}.compact-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.compact-btn{padding:9px;border:1px solid #b1cbd21c;border-radius:10px;color:#b6d0d2;background:#13202a;text-align:center;font-size:10px}.compact-btn:hover,.compact-btn.on{background:#b9e8d017;color:#cffde8;border-color:#aff7d154}.pill-row{display:flex;gap:6px;flex-wrap:wrap}.pill{border-radius:20px;padding:7px 9px;border:1px solid #b5d4cd26;color:#9fb3b9;background:#14212a;font-size:10px}.pill.on{background:#b4efdb20;border-color:#b9efd76b;color:#d4ffeb}.status-card{padding:13px;border-radius:13px;background:linear-gradient(150deg,#17342f66,#17232b66);border:1px solid #bbefd121;margin-top:22px;display:flex;gap:10px;color:#b6d5cb}.status-card svg{width:15px;height:15px;flex-shrink:0;margin-top:2px}.status-card strong{font-size:11px;color:#c5f3d8}.status-card p{font-size:10px;color:#83a49b;margin:3px 0 0;line-height:1.5}.del-btn{color:#eeb0b0;border-color:#de9da824}.bottom{height:30px;display:flex;align-items:center;justify-content:space-between;padding:0 26px;flex-shrink:0;border-top:1px solid #aacbc10e;color:#5c7583;font:9px monospace;letter-spacing:.5px}.bottom strong{font-weight:500;color:#94b7ac}.toast{position:fixed;left:50%;bottom:48px;transform:translate(-50%,20px) scale(.97);opacity:0;pointer-events:none;z-index:100;padding:12px 16px;border-radius:12px;border:1px solid #c0ffe351;background:#1c3937e8;box-shadow:0 12px 40px #0008;backdrop-filter:blur(20px);color:#e2ffee;font-size:12px;transition:.3s var(--ease)}.toast.show{transform:translate(-50%,0) scale(1);opacity:1}.kbd{border:1px solid #d8f0e330;border-radius:5px;padding:2px 5px;background:#ffffff0a;font:9px monospace}#importFile{display:none}.help{font-size:10px;color:#78929e;line-height:1.65;margin-top:12px}.light-sweep{position:relative;overflow:hidden}.light-sweep:before{content:"";position:absolute;inset:-150%;background:linear-gradient(90deg,transparent 45%,#ffffff18 51%,transparent 55%);transform:translateX(-110%) rotate(16deg);pointer-events:none}.light-sweep:hover:before{animation:sweep .75s ease}@keyframes sweep{to{transform:translateX(110%) rotate(16deg)}}@keyframes jelly-in{0%{transform:scale(.965,.975)}45%{transform:scale(1.025,.99)}75%{transform:scale(.996,1.012)}100%{transform:scale(1)}}.mode-tab.active,.shot-item.active,.cast-item.selected,.tl-card.active{animation:jelly-in .34s var(--ease)}
@@ -106,6 +106,147 @@ body{font-family:Inter,-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFa
  .app button:not(:disabled):active {transform:none!important;}
 }
 
+
+/* FRAMEFLOW STUDIO V3 — Editorial Cinematography UI
+   References: ShotPro camera blocking; Cine Tracer set-view / monitor division;
+   FMV GLASS-GEL-001 shared thumb + FMV-WEB-FOCUS-001 zero residual rectangle. */
+:root{
+ --bg:#131616;--panel:#1b1e1e;--panel2:#222726;--stroke:rgba(225,220,208,.11);
+ --line:rgba(231,220,202,.075);--txt:#eeeae0;--muted:#a29f96;--dim:#7c817b;
+ --mint:#d5bd95;--mint2:#bfa783;--violet:#b4a5b6;--amber:#d9b581;
+ --ease:cubic-bezier(.19,.87,.25,1);--radius:12px;
+}
+html,body{background:#101313;color-scheme:dark}
+body{font-family:Inter,"SF Pro Display","PingFang SC","Microsoft YaHei",sans-serif;font-size:12px;letter-spacing:.04px}
+.app{background:#151818;min-height:590px}
+.app:before{display:none}
+.topbar{height:64px;padding:0 23px;background:#161919;backdrop-filter:none;border-bottom:1px solid #d2c6ab15;gap:16px}
+.logo{gap:12px;min-width:206px}
+.mark{width:31px;height:31px;border-radius:8px;border:1px solid #d3b78b55;background:#252a27;box-shadow:none}
+.mark svg{width:19px;filter:saturate(.35)}
+.brand{font-size:13px;letter-spacing:2.15px;font-weight:680;color:#f4f0e7}
+.brand small{font-size:7.5px;letter-spacing:2.5px;margin-top:4px;color:#958e82}
+.crumb{font-size:11px;color:#777d78}.crumb strong{color:#aaa99f}
+.top-notice{padding:5px 8px;border:0;background:transparent;color:#8f968f;font-size:10px}
+.live-dot{width:5px;height:5px;background:#cfae7c;box-shadow:none}.live-dot.ok{background:#a2c6ad;box-shadow:none}
+.top-actions{gap:7px}
+.btn{height:33px;border:1px solid #d8cfbd1b;border-radius:8px;background:#252a28;color:#c4c4b9;font-size:11px;padding:0 12px}
+.btn:hover{background:#323835;border-color:#d6c8ab32}
+.btn.main{background:#d8c19c;color:#252824;border-color:#d8c19c;box-shadow:none!important;font-weight:650}
+.btn.main:hover{background:#edcf9f;color:#1c2220}
+.btn.ghost{background:transparent}
+.frame{grid-template-columns:211px minmax(0,1fr) 262px;background:#151818}
+.rail{background:#1a1d1d;border-color:#d8cbb711}
+.rail.right{background:#1a1d1d;border-color:#d8cbb711}
+.rail-inner{padding:20px 14px 20px}
+.eyebrow{color:#888e88;font-size:9px;letter-spacing:1.35px;font-weight:650}
+.scene-card{margin-top:13px;height:152px;border-radius:9px;border:1px solid #c9bca429;padding:16px 14px;background:linear-gradient(158deg,#39413a 0%,#2d3733 32%,#1e2423 78%);display:flex;flex-direction:column;justify-content:flex-end}
+.scene-card:before{content:"01";position:absolute;top:-24px;right:3px;font-size:144px;line-height:1;letter-spacing:-14px;font-weight:300;color:#cbbca10f;font-family:Georgia,serif;pointer-events:none}
+.scene-card:after{width:150px;height:150px;left:-35px;top:-85px;right:auto;border-radius:50%;border:0;background:radial-gradient(ellipse,#ded5b012,transparent 66%);box-shadow:none}
+.scene-num{font-family:monospace;letter-spacing:1px;font-size:8px;color:#ccbda3;margin-bottom:8px}
+.scene-name{font-size:16px;margin:0 0 4px;font-weight:630;color:#f4eddd;letter-spacing:.2px}
+.scene-sub{font-size:9px;color:#aeb5a8}
+.section-head{margin:25px 2px 9px}
+.section-head h3{font-size:11px;color:#e2e0d5;font-weight:610}
+.tiny{color:#828981;font-size:9px}
+.cast-list{gap:3px}
+.cast-item{padding:9px 8px;gap:9px;border-radius:8px;min-height:47px}
+.cast-item:hover{background:#d9c3a60a}
+.cast-item.selected{background:#e4d4b118;border-color:transparent;border-left:2px solid #c9ae83;box-shadow:none!important}
+.avatar{border-radius:50%;width:30px;height:30px;flex-basis:30px;box-shadow:none;filter:saturate(.63) brightness(.91);font-size:11px}
+.cast-name{font-size:11px;font-weight:560;color:#e5e1d6}
+.cast-pos{font-size:9px}
+.addline{border:1px dashed #cfc8ae20;border-radius:8px;height:32px;margin-top:8px;color:#a9a89a;font-size:11px}
+.addline:hover{background:#d7cbaa0d;color:#eee1c4;border-color:#d7cbaa3f}
+.shot-item{gap:8px;padding:9px 6px;border-radius:7px}
+.shot-item strong{font-size:10px;font-weight:550}
+.shot-item small{font-size:9px;color:#858e86}
+.shot-n{color:#cdb58f}
+.shot-item.active{background:#d5c7a313;border-color:transparent;border-left:2px solid #c3aa82}
+.workspace{padding:18px 18px 14px;gap:12px;background:#151818}
+.workspace-header{min-height:50px;align-items:center}
+.headline .sup{font-size:9px;letter-spacing:1.2px;color:#c2ae8c}
+.headline h1{font-size:21px;margin:4px 0 2px;font-weight:580;letter-spacing:.1px;color:#f3eee3}
+.headline p{color:#888d88;font-size:10px}
+.mode-tabs{border:1px solid #c6bfa322;background:#202523;padding:4px;border-radius:9px}
+.mode-tab{padding:7px 13px;color:#a3aaa4;font-size:10px;border-radius:6px}
+.fmv-segmented .fmv-tab-thumb{border-radius:6px;border:1px solid #d1bea061;background:linear-gradient(120deg,#9f99844b,#a1a28b29);backdrop-filter:blur(4px);box-shadow:none!important}
+@keyframes fmv-gel-bounce{0%,100%{border-radius:6px;filter:blur(0)}32%{border-radius:9px 4px 10px 5px;filter:blur(.36px)}70%{border-radius:5px 10px 4px 9px;filter:none}}
+.mode-tabs .mode-tab.active,.view-switch button.active{color:#f5ead6;transform:translateY(-.4px) scale(1)}
+.metrics{display:none!important}
+.stage-layout{grid-template-columns:.9fr 1.16fr;gap:10px;min-height:300px}
+.panel-view{border:1px solid #d8c6a224;border-radius:11px;box-shadow:none;background:#202725}
+.panel-view:after{box-shadow:inset 0 0 95px #060c0a1c;border-radius:11px}
+.stage-top{top:16px;left:17px;right:17px}
+.stage-title{font-size:11px;font-weight:590;letter-spacing:.2px;color:#e6e5d9;gap:8px}
+.stage-title .dot{display:none}
+.stage-prefix{font:10px monospace;color:#d5b58b;margin-right:2px}
+.stage-number{font:8px monospace;letter-spacing:1.1px;color:#a7aaa180;margin-left:3px}
+.stage-sub{font-size:8px}
+.stage-tag{border:0;background:transparent;color:#9ca59e;padding:2px}
+.view-switch{border:1px solid #e3d7b11e;background:#202523cd;border-radius:8px;padding:3px;min-height:32px}
+.view-switch button{font-size:10px;border-radius:5px;padding:5px 10px}
+.view-switch .fmv-tab-thumb{border-radius:5px}
+.canvas-float{bottom:13px;right:13px;gap:5px}
+.floatbtn{border-radius:7px;width:32px;height:32px;border-color:#d5c9b527;background:#202723c9;color:#c9c5b2}
+.floatbtn:hover{background:#333b35;border-color:#d4bb9559}
+.canvas-left-note{color:#b7b2a075;font-size:9px}
+.timeline{height:118px;min-height:118px;max-height:118px;overflow:hidden;background:transparent;padding:0}
+.tl-head{display:flex;align-items:center;margin-bottom:9px;padding:0 1px}
+.tl-head strong{font:650 10px/1.3 Inter,sans-serif;color:#dbc8a8;letter-spacing:1.1px}
+.timeline-local{font-size:10px;letter-spacing:0;color:#aaa89d;font-weight:500}
+.tl-head small{font:9px monospace;color:#6f7771;letter-spacing:.5px}
+.timeline-track{display:flex;align-items:stretch;gap:9px;overflow-x:auto;padding-bottom:7px;scrollbar-width:thin}
+.tl-card{position:relative;min-width:211px!important;max-width:232px;flex:0 0 211px!important;height:78px;display:flex;align-items:center;gap:8px;padding:7px!important;border-radius:8px!important;border:1px solid #c9bcac1d!important;background:#202525!important;box-shadow:none!important;overflow:hidden}
+.tl-card:hover{background:#2a302d!important;border-color:#c7b18d50!important}
+.tl-card.active{border:1px solid #d7b78784!important;background:#38392f!important}
+.tl-thumb{position:relative;overflow:hidden;flex:0 0 91px;width:91px;height:61px;border-radius:4px;background:#303b38;display:block}
+.tl-preview{width:100%;height:100%;object-fit:cover;display:block}
+.film-count{position:absolute;top:3px;left:5px;font:700 9px monospace;color:#fff4e1;text-shadow:0 1px 5px #000}
+.tl-copy{flex:1;min-width:0;text-align:left;display:flex;flex-direction:column;gap:6px}
+.tl-copy small{font:9px monospace;letter-spacing:0;color:#c6bba7;white-space:nowrap}
+.shot-dot{color:#867967;margin:0 2px}
+.tl-copy strong{font-size:11px;color:#e8e2d6;font-weight:580;line-height:1.35;white-space:normal;max-height:31px;overflow:hidden}
+.tl-add{height:78px;min-width:44px;border-radius:8px;background:#262b28;border:1px dashed #beb09448;color:#c4bca7}
+.tl-add:hover{background:#333933}
+.inspector-top{margin-bottom:15px}
+.inspector-title{font-size:20px;font-weight:570;color:#f0eade;letter-spacing:0}
+.inspector-sub{font-size:9px;letter-spacing:1.2px;color:#a7a59b}
+.prop-group{border-color:#d1c5ad14;padding-top:18px;margin-top:18px}
+.prop-header{font-size:10px;color:#d1caba;font-weight:560}
+.prop-label{font-size:10px;color:#aeb0a6}
+.prop-label b{font:600 11px monospace;color:#e6d5b6}
+.field{border:1px solid #d4c7aa21;border-radius:8px;background:#252a28}
+.field:focus-within{border-color:#dbc49a5e;box-shadow:none!important}
+.field label{font-size:9px;color:#9da399}
+.field input{color:#eee5d5;font-size:12px;font-weight:580}
+.range{accent-color:#d9bd91}
+.pill{background:#2a302c;border:1px solid #d7cbb322;border-radius:7px;color:#aaa89d}
+.pill.on{background:#c5ad8940;border-color:#d2b48c;color:#f5e7d3}
+.compact-btn{border:1px solid #d1c5ad21;background:#252a28;border-radius:7px;color:#cfcdc0;font-size:10px}
+.compact-btn:hover{background:#323833}
+.rotation-dial{background:radial-gradient(circle,#323a33 0%,#232925 64%,#222722 100%);border:1px solid #d9c9a748;box-shadow:none!important}
+.dial-direction{background:#d4b88f}
+.dial-center{background:#222a25;border-color:#dbcaad4c}
+.dial-center b{color:#f1e0c5}
+.bottom{height:22px;min-height:22px;background:#141716;border-color:#dcc8ad10;padding:0 22px;color:#777e76;font:8px monospace;letter-spacing:1.1px}
+/* desktop cinema-focus layout: main canvases expand, all state stays mounted */
+.app.focus-mode .frame{grid-template-columns:0 minmax(0,1fr) 0}
+.app.focus-mode .rail{opacity:0;pointer-events:none;overflow:hidden;visibility:hidden}
+.app.focus-mode .workspace{padding-left:24px;padding-right:24px}
+.app.focus-mode .panel-view{border-color:#d3c3a43d}
+.frame{transition:grid-template-columns 250ms cubic-bezier(.2,.86,.24,1)}
+.rail{transition:opacity 190ms ease}
+@media(max-width:700px){#focusBtn{display:none!important}.app.focus-mode .frame{display:flex}.app.focus-mode .rail{opacity:1;visibility:visible;pointer-events:auto}.app.focus-mode .workspace{padding-left:12px;padding-right:12px}}
+/* input modality: no square shadow box, preserve accessible flat keyboard focus */
+.app button:focus-visible{outline:none!important;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px;text-decoration-color:#e4c48b}
+.app .cast-item.selected,.app .shot-item.active,.app .tl-card.active{animation:none;box-shadow:none!important}
+@media(max-width:1450px) and (min-width:921px){.frame{grid-template-columns:190px minmax(0,1fr) 234px}.workspace{padding:16px 12px}.rail-inner{padding:18px 11px}.stage-layout{grid-template-columns:.93fr 1.1fr}.tl-card{min-width:190px!important;flex-basis:190px!important}}
+@media(max-width:1100px) and (min-width:701px){.frame{grid-template-columns:158px minmax(0,1fr) 201px}.rail-inner{padding:14px 9px}.workspace{padding:13px 10px}.tl-card{min-width:174px!important;flex-basis:174px!important}.tl-thumb{width:72px;flex-basis:72px}.inspector-title{font-size:16px}}
+@media(max-width:920px) and (min-width:701px){.frame{grid-template-columns:150px minmax(0,1fr)}.rail.right{display:none}}
+@media(max-width:700px){html,body{background:#151818}.app{min-height:100dvh;height:auto;overflow:visible}.topbar{height:54px;padding:0 13px}.logo{min-width:0}.mark{width:27px;height:27px}.brand{font-size:11px;letter-spacing:1.6px}.brand small{display:none}.workspace{order:1;padding:18px 12px;gap:12px}.workspace-header{min-height:40px}.headline h1{font-size:17px}.headline .sup{display:none}.headline p{font-size:9px}.mode-tabs{padding:3px}.mode-tab{padding:6px 8px}.stage-layout{grid-template-columns:1fr;grid-template-rows:350px 390px;gap:10px}.stage-layout.only-2d,.stage-layout.only-3d{grid-template-rows:450px}.panel-view{border-radius:10px}.timeline{height:113px;min-height:113px;max-height:113px}.tl-card{min-width:199px!important;flex-basis:199px!important}.rail{order:2;background:#1a1d1d}.rail.right{order:3;display:block}.rail-inner,.right .rail-inner{padding:18px 14px}.scene-card{height:110px;max-width:none}.section-head{margin:18px 0 10px}.cast-item{padding:8px}.bottom{font-size:8px}}
+@media(max-width:410px){.workspace{padding:12px 9px}.stage-layout{grid-template-rows:305px 333px;gap:9px}.stage-layout.only-2d,.stage-layout.only-3d{grid-template-rows:403px}.headline h1{font-size:15px}.stage-title{font-size:10px}.view-switch button{padding:5px 8px}.tl-card{min-width:185px!important;flex-basis:185px!important}.tl-thumb{flex-basis:81px;width:81px}}
+@media(prefers-reduced-motion:reduce){.tl-card,.fmv-segmented .fmv-tab-thumb{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
@@ -114,12 +255,12 @@ body{font-family:Inter,-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFa
   <div class="logo"><div class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="#c6ffe5" stroke-width="1.3"><path d="m3 16 9-13 9 13-9 5z"/><path d="m3 16 9-3 9 3M12 13V3"/></svg></div><div class="brand">FRAMEFLOW<small>PREVIS STUDIO</small></div></div>
   <div class="crumb">夜色中的对话 <span class="crumb-slash">/</span> 01</div>
   <div class="top-center"><div class="top-notice"><span class="live-dot" id="statusDot"></span><span id="saveStatus">本地演示 · 浏览器自动保存</span></div></div>
-  <div class="top-actions"><button class="btn ghost" id="importBtn">导入</button><button class="btn" id="agentBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M7 7h10v10H7zM3 9V3h6M15 3h6v6M21 15v6h-6M9 21H3v-6"/></svg> 连接</button><button class="btn main light-sweep" id="exportBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v13m-5-5 5 5 5-5M4 16v4h16v-4"/></svg> 导出</button></div>
+  <div class="top-actions"><button class="btn icon ghost" id="focusBtn" title="专注视图 (F)" aria-label="切换专注视图"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5m6 0h5v5M20 15v5h-5M9 20H4v-5"/></svg></button><button class="btn ghost" id="importBtn">导入</button><button class="btn" id="agentBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M7 7h10v10H7zM3 9V3h6M15 3h6v6M21 15v6h-6M9 21H3v-6"/></svg> 连接</button><button class="btn main light-sweep" id="exportBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v13m-5-5 5 5 5-5M4 16v4h16v-4"/></svg> 导出</button></div>
  </header>
  <div class="frame">
   <aside class="rail"><div class="rail-inner">
-    <div class="eyebrow">场景</div>
-    <div class="scene-card"><div class="scene-num">01 / INT</div><div class="scene-name">夜色中的对话</div><div class="scene-sub">室内 · 夜</div></div>
+    <div class="eyebrow">PROJECT / 场景</div>
+    <div class="scene-card"><div class="scene-num">SCENE 01  /  INTERIOR</div><div class="scene-name">夜色中的对话</div><div class="scene-sub">室内  ·  夜景  ·  PREVIS</div></div>
     <div class="section-head"><h3>人物</h3><span class="tiny" id="actorCount">03</span></div>
     <div id="actorList" class="cast-list"></div><button class="addline" id="addActor"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg> 添加</button>
     <div class="section-head" style="margin-top:23px"><h3>机位</h3><span class="tiny" id="shotCount">03</span></div>
@@ -127,17 +268,17 @@ body{font-family:Inter,-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFa
     
   </div></aside>
   <main class="workspace">
-   <div class="workspace-header"><div class="headline"><div class="sup">SCENE 01</div><h1>空间调度 <span class="headline-sub">/ 夜色中的对话</span></h1></div><div class="mode-tabs fmv-segmented" role="group" aria-label="布局切换"><span class="fmv-tab-thumb" aria-hidden="true"></span><button class="mode-tab active" data-layout="both">双视图</button><button class="mode-tab" data-layout="2d">2D 平面</button><button class="mode-tab" data-layout="3d">3D 舞台</button></div></div>
+   <div class="workspace-header"><div class="headline"><div class="sup">SCENE 01</div><h1>夜色中的对话</h1></div><div class="mode-tabs fmv-segmented" role="group" aria-label="布局切换"><span class="fmv-tab-thumb" aria-hidden="true"></span><button class="mode-tab active" data-layout="both">双视图</button><button class="mode-tab" data-layout="2d">2D 平面</button><button class="mode-tab" data-layout="3d">3D 舞台</button></div></div>
    <div class="metrics"><div class="metric"><div class="mi"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.5"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg></div><div><small>当前镜头</small><strong id="metricShot">01 <span class="unit">/ 03</span></strong></div></div><div class="metric"><div class="mi"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.5"><path d="M3 4v16m18-16v16M7 8l10 8M7 16l10-8"/></svg></div><div><small>镜头焦距</small><strong id="metricLens">35 <span class="unit">mm</span></strong></div></div><div class="metric"><div class="mi"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.5"><path d="m12 2 8 5v10l-8 5-8-5V7zM4 7l8 5 8-5m-8 5v10"/></svg></div><div><small>场景规模</small><strong id="metricSize">12 × 9 <span class="unit">m</span></strong></div></div><div class="metric"><div class="mi"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.5"><path d="m4 12 4 4 12-12M4 21h16"/></svg></div><div><small>数据版本</small><strong id="metricRev">r000 <span class="unit">LIVE</span></strong></div></div></div>
    <div class="stage-layout" id="stageLayout">
-    <div class="panel-view" id="panel2d"><canvas id="topCanvas" aria-label="二维俯视图，拖拽人物和摄像机修改位置"></canvas><div class="stage-top"><div><div class="stage-title">平面 <span class="stage-number">02D</span></div><div class="stage-sub"></div></div><div class="stage-tag"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="m5 15 10-10M8 5h7v7"/></svg></div></div><div class="canvas-float"><button class="floatbtn" id="snapBtn" title="切换网格吸附"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="4" y="4" width="12" height="12" rx="1" stroke="currentColor" stroke-width="1.35"/><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width=".8" opacity=".75"/></svg></button><button class="floatbtn" id="reset2d" title="重置平面视图"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="6.5" stroke="currentColor" stroke-width="1.3"/><path d="M10 1.5v4m0 9v4M1.5 10h4m9 0h4" stroke="currentColor" stroke-width="1.2"/></svg></button></div><div class="canvas-left-note" id="mapHint"></div><div class="actor-quick" id="actorQuick" hidden><span class="quick-name" id="quickName">人物</span><button id="quickFaceCam" title="面向摄影机">面向机位</button><button id="quickFaceActor" title="面向最近的人">面对人物</button><span class="quick-yaw" id="quickYaw">0°</span></div></div>
-    <div class="panel-view" id="panel3d"><canvas id="viewCanvas" aria-label="三维预演视图"></canvas><div class="stage-top"><div><div class="stage-title">空间 <span class="stage-number">03D</span></div><div class="stage-sub" id="viewHint"></div></div><div class="view-switch fmv-segmented" role="group" aria-label="取景模式"><span class="fmv-tab-thumb" aria-hidden="true"></span><button class="active" data-view="orbit">自由</button><button data-view="shot">镜头</button></div></div><div class="canvas-float"><button class="floatbtn" id="zoomOut" title="远离场景"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button><button class="floatbtn" id="zoomIn" title="靠近场景"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button><button class="floatbtn" id="resetView" title="重置三维观察角度"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="6.5" stroke="currentColor" stroke-width="1.3"/><path d="M10 1.5v4m0 9v4M1.5 10h4m9 0h4" stroke="currentColor" stroke-width="1.2"/></svg></button></div><div class="canvas-left-note" id="viewFoot"></div></div>
+    <div class="panel-view" id="panel2d"><canvas id="topCanvas" aria-label="二维俯视图，拖拽人物和摄像机修改位置"></canvas><div class="stage-top"><div><div class="stage-title"><span class="stage-prefix">01</span> 平面布位 <span class="stage-number">PLAN</span></div><div class="stage-sub"></div></div><div class="stage-tag"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="m5 15 10-10M8 5h7v7"/></svg></div></div><div class="canvas-float"><button class="floatbtn" id="snapBtn" title="切换网格吸附"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="4" y="4" width="12" height="12" rx="1" stroke="currentColor" stroke-width="1.35"/><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width=".8" opacity=".75"/></svg></button><button class="floatbtn" id="reset2d" title="重置平面视图"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="6.5" stroke="currentColor" stroke-width="1.3"/><path d="M10 1.5v4m0 9v4M1.5 10h4m9 0h4" stroke="currentColor" stroke-width="1.2"/></svg></button></div><div class="canvas-left-note" id="mapHint"></div><div class="actor-quick" id="actorQuick" hidden><span class="quick-name" id="quickName">人物</span><button id="quickFaceCam" title="面向摄影机">面向机位</button><button id="quickFaceActor" title="面向最近的人">面对人物</button><span class="quick-yaw" id="quickYaw">0°</span></div></div>
+    <div class="panel-view" id="panel3d"><canvas id="viewCanvas" aria-label="三维预演视图"></canvas><div class="stage-top"><div><div class="stage-title"><span class="stage-prefix">02</span> 场景预演 <span class="stage-number">VIEWPORT</span></div><div class="stage-sub" id="viewHint"></div></div><div class="view-switch fmv-segmented" role="group" aria-label="取景模式"><span class="fmv-tab-thumb" aria-hidden="true"></span><button class="active" data-view="orbit">自由</button><button data-view="shot">镜头</button></div></div><div class="canvas-float"><button class="floatbtn" id="zoomOut" title="远离场景"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button><button class="floatbtn" id="zoomIn" title="靠近场景"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button><button class="floatbtn" id="resetView" title="重置三维观察角度"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="6.5" stroke="currentColor" stroke-width="1.3"/><path d="M10 1.5v4m0 9v4M1.5 10h4m9 0h4" stroke="currentColor" stroke-width="1.2"/></svg></button></div><div class="canvas-left-note" id="viewFoot"></div></div>
    </div>
-   <div class="timeline"><div class="tl-head"><strong>镜头</strong><small id="stripInfo">SHOT SEQUENCE</small></div><div class="timeline-track" id="timelineTrack"></div></div>
+   <div class="timeline"><div class="tl-head"><strong>SHOT DECK <span class="timeline-local">· 镜头序列</span></strong><small id="stripInfo">01 — 03  /  SHOTS</small></div><div class="timeline-track" id="timelineTrack"></div></div>
   </main>
   <aside class="rail right"><div class="rail-inner"><div class="inspector-top"><div class="eyebrow">调整</div><button class="btn icon ghost" id="resetSelection" title="选中摄影机"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="6" stroke="currentColor" stroke-width="1.3"/><circle cx="10" cy="10" r="1.7" fill="currentColor"/></svg></button></div><h2 class="inspector-title" id="inspectorName">摄影机 A</h2><div class="inspector-sub" id="inspectorSub">CAMERA</div><div id="inspectorBody"></div></div></aside>
  </div>
- <footer class="bottom"><span>FRAMEFLOW <strong>V2.1</strong></span><span>STORY · SPACE · MOTION</span></footer>
+ <footer class="bottom"><span>FRAMEFLOW <strong>V3.0</strong></span><span>DIRECTOR’S STUDIO  /  CINEMATIC PREVIS</span></footer>
 </div>
 <div class="toast" id="toast"></div><input type="file" id="importFile" accept=".json,application/json">
 <script>
@@ -147,7 +288,7 @@ const fmt=(n,d=1)=>Number(n).toFixed(d);const clamp=(n,a,b)=>Math.max(a,Math.min
 const COLORS=['#edbc94','#b8a7f3','#8ad6cf','#ebadbc','#b8ca87','#95b8ec','#e5c783'];
 const defaultState=()=>({schemaVersion:'1.0',project:{id:'frameflow-demo',name:'夜色中的对话',unit:'meter',createdAt:new Date().toISOString()},revision:0,updatedAt:null,stage:{width:12,depth:9,grid:1},actors:[{id:'actor-1',name:'林晓',color:'#edbc94',x:-2,z:-.45,yaw:60,height:1.7},{id:'actor-2',name:'陈强',color:'#b8a7f3',x:1.35,z:-.6,yaw:-75,height:1.79},{id:'actor-3',name:'民警',color:'#8ad6cf',x:3.35,z:1.3,yaw:-155,height:1.78}],props:[{id:'prop-1',name:'沙发',type:'sofa',x:-2.65,z:-2.45,yaw:0,width:2.8,depth:1.05,height:.8},{id:'prop-2',name:'茶几',type:'table',x:.15,z:-2.2,yaw:0,width:1.5,depth:.8,height:.5},{id:'prop-3',name:'立灯',type:'lamp',x:4.7,z:-3.2,yaw:0,width:.5,depth:.5,height:2}],camera:{id:'camera-a',name:'摄影机 A',x:.25,z:3.75,height:1.6,yaw:0,pitch:-2,focalLength:35},shots:[{id:'shot-1',name:'主镜头 · 全景',note:'WIDE',camera:{x:.25,z:3.75,height:1.6,yaw:0,pitch:-2,focalLength:35}},{id:'shot-2',name:'对话 · 中景',note:'MEDIUM',camera:{x:-3.8,z:2.7,height:1.65,yaw:22,pitch:-1,focalLength:50}},{id:'shot-3',name:'侧面 · 特写',note:'CLOSE-UP',camera:{x:3.9,z:1.65,height:1.7,yaw:-56,pitch:-3,focalLength:70}}],activeShotId:'shot-1',selection:{type:'camera',id:'camera-a'},settings:{snap:true,gridVisible:false}});
 let state=defaultState(),serverAvailable=false,inFlight=false,pending=false,saveTimer=null,holdStatus=null,mounted=false;
-let layout='both',viewMode='orbit',orbit={az:.72,el:.67,dist:17.5,panX:0,panZ:0},mapZoom=1,hovered=null,drag=null,vrDrag=null,scene2d=null,scene3d=null,frameCount=0,dirty=true,history=[],lastSavedJSON='';
+let layout='both',viewMode='orbit',orbit={az:.72,el:.52,dist:14.0,panX:0,panZ:0},mapZoom=1,hovered=null,drag=null,vrDrag=null,scene2d=null,scene3d=null,frameCount=0,dirty=true,history=[],lastSavedJSON='';
 let toastTimer;function toast(s){const t=$('#toast');t.textContent=s;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2300)}
 function selectedActor(){return state.actors.find(a=>a.id===state.selection.id)}function isCamera(){return state.selection.type==='camera'}function shot(){return state.shots.find(s=>s.id===state.activeShotId)||state.shots[0]}
 function validate(v){if(!v||v.schemaVersion!=='1.0'||!v.stage||!Array.isArray(v.actors)||!v.camera||!Array.isArray(v.shots))throw Error('文件不是有效的 FRAMEFLOW 1.0 场景');return v}
@@ -163,7 +304,7 @@ function renderAll(){renderActors();renderShots();renderInspector();refreshMetri
 function refreshMetrics(){const s=shot(),idx=Math.max(0,state.shots.findIndex(x=>x.id===state.activeShotId));$('#metricShot').innerHTML=`${String(idx+1).padStart(2,'0')} <span class="unit">/ ${String(state.shots.length).padStart(2,'0')}</span>`;$('#metricLens').innerHTML=`${Math.round(state.camera.focalLength)} <span class="unit">mm</span>`;$('#metricSize').innerHTML=`${state.stage.width} × ${state.stage.depth} <span class="unit">m</span>`;$('#metricRev').innerHTML=`r${String(state.revision).padStart(3,'0')} <span class="unit">LIVE</span>`;$('#actorCount').textContent=String(state.actors.length).padStart(2,'0');$('#shotCount').textContent=String(state.shots.length).padStart(2,'0');$('#mapHint').textContent='' ;$('#snapBtn').style.color=state.settings.snap?'#c5ffe3':'#627b89'}
 function safe(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
 function renderActors(){$('#actorList').innerHTML=state.actors.map((a,i)=>`<button class="cast-item ${state.selection.id===a.id?'selected':''}" data-actor="${safe(a.id)}"><span class="avatar" style="background:${a.color}">${safe(a.name[0]||'人')}</span><span class="cast-meta"><span class="cast-name">${safe(a.name)}</span></span></button>`).join('');$$('[data-actor]').forEach(e=>e.addEventListener('click',()=>choose('actor',e.dataset.actor)))}
-function renderShots(){const i=state.shots.findIndex(x=>x.id===state.activeShotId);$('#shotList').innerHTML=state.shots.map((s,n)=>`<button class="shot-item ${state.activeShotId===s.id?'active':''}" data-shot="${safe(s.id)}"><span class="shot-n">${String(n+1).padStart(2,'0')}</span><span><strong>${safe(s.name)}</strong><small>${safe(s.note||'SHOT')} · ${s.camera.focalLength}MM</small></span><span class="shot-play"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m7 5 7 5-7 5V5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></span></button>`).join('');$('#timelineTrack').innerHTML=state.shots.map((s,n)=>`<button class="tl-card ${state.activeShotId===s.id?'active':''}" data-shot="${safe(s.id)}"><span class="tl-thumb"><span class="thumb-horizon"></span><span class="thumb-person one"></span><span class="thumb-person two"></span></span><span class="tl-copy"><small>${String(n+1).padStart(2,'0')} · ${s.camera.focalLength}mm</small><strong>${safe(s.name)}</strong></span></button>`).join('')+'<button class="tl-add" id="addShotTimeline" title="保存新镜头" aria-label="保存新镜头"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>';$$('[data-shot]').forEach(e=>e.addEventListener('click',()=>selectShot(e.dataset.shot)));$('#addShotTimeline').onclick=addShot}
+function renderShots(){const i=state.shots.findIndex(x=>x.id===state.activeShotId);$('#shotList').innerHTML=state.shots.map((s,n)=>`<button class="shot-item ${state.activeShotId===s.id?'active':''}" data-shot="${safe(s.id)}"><span class="shot-n">${String(n+1).padStart(2,'0')}</span><span><strong>${safe(s.name)}</strong><small>${safe(s.note||'SHOT')} · ${s.camera.focalLength}MM</small></span><span class="shot-play"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m7 5 7 5-7 5V5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></span></button>`).join('');$('#timelineTrack').innerHTML=state.shots.map((s,n)=>`<button class="tl-card ${state.activeShotId===s.id?'active':''}" data-shot="${safe(s.id)}"><span class="tl-thumb"><canvas class="tl-preview" data-preview-shot="${safe(s.id)}" width="240" height="135" aria-hidden="true"></canvas><span class="film-count">${String(n+1).padStart(2,'0')}</span></span><span class="tl-copy"><small>${s.camera.focalLength}mm <span class="shot-dot">/</span> ${safe(s.note||'SHOT')}</small><strong>${safe(s.name)}</strong></span></button>`).join('')+'<button class="tl-add" id="addShotTimeline" title="保存新镜头" aria-label="保存新镜头"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>';$$('[data-shot]').forEach(e=>e.addEventListener('click',()=>selectShot(e.dataset.shot)));$('#addShotTimeline').onclick=addShot;scheduleShotPreviews()}
 function choose(type,id){state.selection={type,id};renderActors();renderInspector();updateOrientationUI();dirty=true}
 function selectShot(id){const s=state.shots.find(x=>x.id===id);if(!s)return;historyPush();state.activeShotId=id;Object.assign(state.camera,copy(s.camera));state.selection={type:'camera',id:state.camera.id};commit();renderAll();toast('已切换到 '+s.name)}
 function addShot(){historyPush();const n=state.shots.length+1;const s={id:'shot-'+Date.now().toString(36),name:`镜头 ${String(n).padStart(2,'0')}`,note:'CUSTOM',camera:{x:state.camera.x,z:state.camera.z,height:state.camera.height,yaw:state.camera.yaw,pitch:state.camera.pitch,focalLength:state.camera.focalLength}};state.shots.push(s);state.activeShotId=s.id;commit();renderAll();toast('已保存当前摄影机位')}
@@ -200,8 +341,8 @@ function placeTabThumb(nav,animate=false){
   const nr=nav.getBoundingClientRect(),br=active.getBoundingClientRect();
   if(!nr.width||!br.width)return;
   if(!animate||reduceMotion.matches)thumb.classList.add('no-motion');
-  thumb.style.width=br.width+'px';thumb.style.height=br.height+'px';
-  thumb.style.transform=`translate3d(${br.left-nr.left}px,${br.top-nr.top}px,0)`;
+  thumb.style.width=active.offsetWidth+'px';thumb.style.height=active.offsetHeight+'px';
+  thumb.style.transform=`translate3d(${active.offsetLeft}px,${active.offsetTop}px,0)`;
   if(animate&&!reduceMotion.matches){
     thumb.classList.remove('gel-bounce');void thumb.offsetWidth;
     thumb.classList.add('gel-bounce');
@@ -279,10 +420,11 @@ requestAnimationFrame(()=>{
   syncTabGroup('.view-switch',$('[data-view="orbit"]'),false);
 });
 $('#addActor').onclick=addActor;$('#addShotSide').onclick=addShot;$('#resetSelection').onclick=()=>choose('camera',state.camera.id);
-$('#snapBtn').onclick=()=>{state.settings.snap=!state.settings.snap;commit();toast(state.settings.snap?'已开启 0.25m 网格吸附':'已关闭网格吸附')};$('#reset2d').onclick=()=>{mapZoom=1;dirty=true};$('#resetView').onclick=()=>{orbit={az:.72,el:.67,dist:17.5,panX:0,panZ:0};setViewMode('orbit')};$('#zoomIn').onclick=()=>{orbit.dist=clamp(orbit.dist-1.5,7,29);dirty=true};$('#zoomOut').onclick=()=>{orbit.dist=clamp(orbit.dist+1.5,7,29);dirty=true};
+$('#snapBtn').onclick=()=>{state.settings.snap=!state.settings.snap;commit();toast(state.settings.snap?'已开启 0.25m 网格吸附':'已关闭网格吸附')};$('#reset2d').onclick=()=>{mapZoom=1;dirty=true};$('#resetView').onclick=()=>{orbit={az:.72,el:.52,dist:14.0,panX:0,panZ:0};setViewMode('orbit')};$('#zoomIn').onclick=()=>{orbit.dist=clamp(orbit.dist-1.5,7,29);dirty=true};$('#zoomOut').onclick=()=>{orbit.dist=clamp(orbit.dist+1.5,7,29);dirty=true};
 $('#exportBtn').onclick=()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});const u=URL.createObjectURL(blob);const a=document.createElement('a');a.href=u;a.download=`FRAMEFLOW_scene_${new Date().toISOString().slice(0,10)}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);toast('已导出完整场景 JSON')};$('#importBtn').onclick=()=>$('#importFile').click();$('#importFile').onchange=async(e)=>{const f=e.target.files[0];if(!f)return;try{const val=validate(JSON.parse(await f.text()));historyPush();state=val;commit();renderAll();toast('场景 JSON 已导入')}catch(err){toast('导入失败：'+err.message)}e.target.value=''};
+$('#focusBtn').onclick=()=>toggleFocusMode();function toggleFocusMode(){document.querySelector('.app').classList.toggle('focus-mode');resize();setTimeout(resize,260)}
 $('#agentBtn').onclick=async()=>{const prompt=`请连接 FRAMEFLOW 导演台：本地地址 http://127.0.0.1:8765 。使用 GET /api/state 读取完整场景 JSON；使用 GET /api/events?after=0 获取变更事件并轮询；或监听项目目录 director-state.json 和 director-events.jsonl。坐标单位为米：x 是舞台左右，z 是舞台纵深，yaw/pitch 是角度，camera.focalLength 是 mm。用户在网页移动演员、摄像机或更改焦距时，请读取新状态并根据具体数值更新你的生成提示词或分镜规划。注意：2D 选中人物后，拖动人物外围的朝向圆环会更新 actors[].yaw；旋转观察 3D 空间不会修改摄影机数据，拍摄画面模式旋转才会改 camera.yaw/pitch。`;try{await navigator.clipboard.writeText(prompt);toast('已复制 Agent 接入说明')}catch{toast('接口：GET /api/state · GET /api/events')}};
-window.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'&&history.length){if(['INPUT','TEXTAREA'].includes(document.activeElement?.tagName))return;e.preventDefault();state=history.pop();commit();renderAll();toast('已撤销上一步')}if(e.key==='Escape')choose('camera',state.camera.id)});
+window.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'&&history.length){if(['INPUT','TEXTAREA'].includes(document.activeElement?.tagName))return;e.preventDefault();state=history.pop();commit();renderAll();toast('已撤销上一步')}if(e.key.toLowerCase()==='f'&&!['INPUT','TEXTAREA'].includes(document.activeElement?.tagName)&&!e.ctrlKey&&!e.metaKey&&!e.altKey){e.preventDefault();toggleFocusMode()}if(e.key==='Escape')choose('camera',state.camera.id)});
 const topCanvas=$('#topCanvas'),viewCanvas=$('#viewCanvas');let g2,g3;
 function resize(){for(const [canvas,key] of [[topCanvas,'2'],[viewCanvas,'3']]){const b=canvas.getBoundingClientRect();if(b.width<1||b.height<1)continue;const dpr=Math.min(window.devicePixelRatio||1,2),pw=Math.round(b.width*dpr),ph=Math.round(b.height*dpr);if(canvas.width!==pw||canvas.height!==ph){canvas.width=pw;canvas.height=ph}const c=canvas.getContext('2d');c.setTransform(dpr,0,0,dpr,0,0);if(key==='2'){g2=c;scene2d={w:b.width,h:b.height}}else{g3=c;scene3d={w:b.width,h:b.height}}}dirty=true}
 window.addEventListener('resize',resize);new ResizeObserver(resize).observe($('#stageLayout'));
@@ -298,44 +440,56 @@ function draw2D(){
   if(!g2||!scene2d)return;
   const c=g2,{w,h}=scene2d,{cx,cy,s,left,top}=stageGeom();
   c.clearRect(0,0,w,h);
-  const bg=c.createLinearGradient(0,0,w,h);bg.addColorStop(0,'#151a1c');bg.addColorStop(.6,'#11181a');bg.addColorStop(1,'#0d1317');c.fillStyle=bg;c.fillRect(0,0,w,h);
-  const a=c.createRadialGradient(cx-70,cy-75,5,cx,cy,Math.max(w,h)*.7);a.addColorStop(0,'#c7d0bb08');a.addColorStop(1,'transparent');c.fillStyle=a;c.fillRect(0,0,w,h);
+  const bg=c.createLinearGradient(0,0,w,h);bg.addColorStop(0,'#1d2321');bg.addColorStop(.54,'#171c1b');bg.addColorStop(1,'#111616');c.fillStyle=bg;c.fillRect(0,0,w,h);
+  const a=c.createRadialGradient(cx-70,cy-75,5,cx,cy,Math.max(w,h)*.7);a.addColorStop(0,'#d8b88b10');a.addColorStop(1,'transparent');c.fillStyle=a;c.fillRect(0,0,w,h);
   const bw=state.stage.width*s,bh=state.stage.depth*s;
-  roundRect(c,left,top,bw,bh,2,'#1c2424','#c1c2b527');
+  roundRect(c,left,top,bw,bh,2,'#252a27','#e4d5b51b');
   c.save();c.beginPath();c.rect(left,top,bw,bh);c.clip();
-  const floor=c.createLinearGradient(left,top,left+bw,top+bh);floor.addColorStop(0,'#252e2b');floor.addColorStop(.58,'#202a28');floor.addColorStop(1,'#1b2525');c.fillStyle=floor;c.fillRect(left,top,bw,bh);
+  const floor=c.createLinearGradient(left,top,left+bw,top+bh);floor.addColorStop(0,'#31352f');floor.addColorStop(.5,'#282e2a');floor.addColorStop(1,'#202724');c.fillStyle=floor;c.fillRect(left,top,bw,bh);
   // Grid is normally invisible. During a drag only a quiet alignment lattice appears.
   if(state.settings.gridVisible||drag){
     for(let x=-state.stage.width/2;x<=state.stage.width/2+.02;x+=2){let pt=mapPt(x,0);c.strokeStyle='#d4dcc20d';c.lineWidth=.7;c.beginPath();c.moveTo(pt.x,top);c.lineTo(pt.x,top+bh);c.stroke()}
     for(let z=-state.stage.depth/2;z<=state.stage.depth/2+.02;z+=2){let pt=mapPt(0,z);c.strokeStyle='#d4dcc20d';c.beginPath();c.moveTo(left,pt.y);c.lineTo(left+bw,pt.y);c.stroke()}
   }
+  // very faint oak plank rhythm; only architectural, never a noisy editing grid
+  for(let i=-12;i<24;i++){
+    const py=top+(i+.5)*s*.72;
+    if(py<top||py>top+bh)continue;
+    c.strokeStyle='rgba(237,222,189,.035)';c.lineWidth=.6;c.beginPath();c.moveTo(left,py);c.lineTo(left+bw,py);c.stroke();
+  }
+  // textured stage rug, clearly subordinate to blocking elements
+  const rug=mapObject(-1.2,-.65,5.7,3.5,0);poly2(c,rug,'#a49a7956','#dfd1a12c',1);
+  const innerRug=mapObject(-1.2,-.65,5.35,3.15,0);poly2(c,innerRug,null,'#d3c49828',.7);
   c.restore();
-  // Simple architectural silhouette, free of measurement labels.
-  c.strokeStyle='#c9c4aa5b';c.lineWidth=3;c.lineCap='round';c.beginPath();c.moveTo(left,top);c.lineTo(left+bw,top);c.stroke();
-  for(const p of state.props){const pts=mapObject(p.x,p.z,p.width,p.depth,p.yaw);poly2(c,pts,p.type==='sofa'?'#747d7752':p.type==='table'?'#aaa38b48':'#d3c69a2d','#d9d6be25',1);const q=mapPt(p.x,p.z);if(p.type==='sofa'){const back=mapObject(p.x,p.z-p.depth*.32,p.width*.91,p.depth*.26,p.yaw);poly2(c,back,'#87968a54');}else if(p.type==='lamp'){c.beginPath();c.arc(q.x,q.y,Math.max(6,.18*s),0,Math.PI*2);c.strokeStyle='#c6b98d55';c.stroke()}}
+  // architectural silhouette, free of measurement labels.
+  c.strokeStyle='#d3b690a0';c.lineWidth=3;c.lineCap='round';c.beginPath();c.moveTo(left,top);c.lineTo(left+bw,top);c.stroke();
+  // pair of recessed windows along the back wall
+  const win=(xx,len)=>{const a0=mapPt(xx,-4.50);const a1=mapPt(xx+len,-4.50);c.lineWidth=5;c.strokeStyle='#66817e';c.beginPath();c.moveTo(a0.x,a0.y);c.lineTo(a1.x,a1.y);c.stroke();c.lineWidth=1.2;c.strokeStyle='#d3c2a3a1';c.beginPath();c.moveTo(a0.x,a0.y+3);c.lineTo(a1.x,a1.y+3);c.stroke()};
+  win(-4.6,1.9);win(1.8,2.7);
+  for(const p of state.props){const pts=mapObject(p.x,p.z,p.width,p.depth,p.yaw);poly2(c,pts,p.type==='sofa'?'#aaa79b87':p.type==='table'?'#b09a7d8f':'#cbb88e5c','#e1d6b73f',1);const q=mapPt(p.x,p.z);if(p.type==='sofa'){const back=mapObject(p.x,p.z-p.depth*.32,p.width*.91,p.depth*.26,p.yaw);poly2(c,back,'#d0c6b190');}else if(p.type==='lamp'){c.beginPath();c.arc(q.x,q.y,Math.max(6,.18*s),0,Math.PI*2);c.strokeStyle='#c6b98d55';c.stroke()}}
   // The camera's cone is only a subtle viewfinder wedge.
   const cam=state.camera,cp=mapPt(cam.x,cam.z),yaw=rad(cam.yaw),fov=2*Math.atan(36/(2*cam.focalLength)),len=clamp(state.stage.depth*.59,3.2,5.5);
   const dx=Math.sin(yaw),dz=-Math.cos(yaw),px=Math.cos(yaw),pz=Math.sin(yaw),half=len*Math.tan(fov/2);
   const l=mapPt(cam.x+dx*len-px*half,cam.z+dz*len-pz*half),r=mapPt(cam.x+dx*len+px*half,cam.z+dz*len+pz*half);
-  const cone=c.createLinearGradient(cp.x,cp.y,cp.x+dx*len*s,cp.y+dz*len*s);cone.addColorStop(0,'#d6e5c31e');cone.addColorStop(1,'#b6d4ad02');poly2(c,[cp,l,r],cone,'#cad4b71e',1);
+  const cone=c.createLinearGradient(cp.x,cp.y,cp.x+dx*len*s,cp.y+dz*len*s);cone.addColorStop(0,'#dbc49a29');cone.addColorStop(1,'#dbc49a02');poly2(c,[cp,l,r],cone,'#ecd1a54a',1);
   for(const actor of state.actors){
     const p=mapPt(actor.x,actor.z),sel=state.selection.type==='actor'&&state.selection.id===actor.id,rr=sel?13:11,ang=rad(actor.yaw);
-    if(sel){c.save();c.strokeStyle='#e6ddc180';c.lineWidth=1.2;c.beginPath();c.arc(p.x,p.y,34,0,Math.PI*2);c.stroke();c.strokeStyle='#e5dfc12a';c.lineWidth=5;c.beginPath();c.arc(p.x,p.y,34,-Math.PI/2,-Math.PI/6);c.stroke();c.restore()}
+    if(sel){c.save();c.strokeStyle='#eacba0a6';c.lineWidth=1.2;c.beginPath();c.arc(p.x,p.y,34,0,Math.PI*2);c.stroke();c.strokeStyle='#eacb8b35';c.lineWidth=5;c.beginPath();c.arc(p.x,p.y,34,-Math.PI/2,-Math.PI/6);c.stroke();c.restore()}
     c.save();c.shadowBlur=sel?17:3;c.shadowColor=actor.color+'35';c.beginPath();c.arc(p.x,p.y,rr,0,Math.PI*2);c.fillStyle=actor.color;c.fill();c.shadowBlur=0;c.strokeStyle='#141b1b';c.lineWidth=2.5;c.stroke();
     // Tiny nose direction means facing is visible even before selection.
-    const ux=Math.sin(ang),uy=-Math.cos(ang);poly2(c,[{x:p.x+ux*(rr+5),y:p.y+uy*(rr+5)},{x:p.x+Math.sin(ang+.55)*(rr-1),y:p.y-Math.cos(ang+.55)*(rr-1)},{x:p.x+Math.sin(ang-.55)*(rr-1),y:p.y-Math.cos(ang-.55)*(rr-1)}],sel?'#f5eccc':actor.color);
+    const ux=Math.sin(ang),uy=-Math.cos(ang);poly2(c,[{x:p.x+ux*(rr+5),y:p.y+uy*(rr+5)},{x:p.x+Math.sin(ang+.55)*(rr-1),y:p.y-Math.cos(ang+.55)*(rr-1)},{x:p.x+Math.sin(ang-.55)*(rr-1),y:p.y-Math.cos(ang-.55)*(rr-1)}],sel?'#ffe6b8':actor.color);
     textOn(c,String(actor.name[0]||'人'),p.x,p.y+.5,'#1c2425',9,'center');
-    if(sel){const hx=p.x+Math.sin(ang)*34,hy=p.y-Math.cos(ang)*34;c.shadowBlur=13;c.shadowColor='#e6d9b873';c.beginPath();c.arc(hx,hy,7.5,0,Math.PI*2);c.fillStyle='#f3e8cf';c.fill();c.shadowBlur=0;c.strokeStyle='#4c4b42';c.lineWidth=1;c.stroke();}
+    if(sel){const hx=p.x+Math.sin(ang)*34,hy=p.y-Math.cos(ang)*34;c.shadowBlur=13;c.shadowColor='#e6bc7a73';c.beginPath();c.arc(hx,hy,7.5,0,Math.PI*2);c.fillStyle='#f1c994';c.fill();c.shadowBlur=0;c.strokeStyle='#4c4b42';c.lineWidth=1;c.stroke();}
     c.restore();
     const label=sel?actor.name:actor.name.slice(0,2),ty=p.y+(sel?51:25),lw=sel?Math.max(42,label.length*13+18):Math.max(25,label.length*11+8);
-    if(sel)roundRect(c,p.x-lw/2,ty-10,lw,20,9,'#ede1cde5');
+    if(sel)roundRect(c,p.x-lw/2,ty-10,lw,20,9,'#e6d2b6e8');
     textOn(c,label,p.x,ty,sel?'#222822':'#c7ccbc82',sel?10:9,'center');
   }
   // The camera gets a quiet, crisp physical icon.
   c.save();c.translate(cp.x,cp.y);c.rotate(yaw);const cameraSelected=isCamera();
   if(cameraSelected){c.beginPath();c.arc(0,0,24,0,Math.PI*2);c.strokeStyle='#e4d9b773';c.lineWidth=1;c.stroke()}
-  roundRect(c,-10,-9,20,19,5,'#eee1c5','#28362b');poly2(c,[{x:-5,y:-9},{x:5,y:-9},{x:0,y:-19}],'#eee1c5');roundRect(c,-3,-2,6,6,2,'#41564b');c.restore();
-  textOn(c,'A',cp.x,cp.y+29,'#f0e9d1a8',10,'center','monospace');
+  roundRect(c,-10,-9,20,19,5,'#e9c99b','#28362b');poly2(c,[{x:-5,y:-9},{x:5,y:-9},{x:0,y:-19}],'#e9c99b');roundRect(c,-3,-2,6,6,2,'#4b4c45');c.restore();
+  textOn(c,'A',cp.x,cp.y+29,'#d8c1a3a8',10,'center','monospace');
 }
 function hitMap(x,y){
   if(state.selection.type==='actor'){const a=selectedActor();if(a){const p=mapPt(a.x,a.z),d=Math.hypot(x-p.x,y-p.y);if(d>=22&&d<=54)return {type:'rotate',id:a.id}}}
@@ -379,7 +533,7 @@ topCanvas.addEventListener('wheel',e=>{e.preventDefault();mapZoom=clamp(mapZoom+
 // 3D world, implemented in plain Canvas without WebGL or network dependencies.
 const V=(x,y,z)=>({x,y,z}),add=(a,b)=>V(a.x+b.x,a.y+b.y,a.z+b.z),sub=(a,b)=>V(a.x-b.x,a.y-b.y,a.z-b.z),mul=(a,m)=>V(a.x*m,a.y*m,a.z*m),dot=(a,b)=>a.x*b.x+a.y*b.y+a.z*b.z,cross=(a,b)=>V(a.y*b.z-a.z*b.y,a.z*b.x-a.x*b.z,a.x*b.y-a.y*b.x),norm=a=>{let d=Math.hypot(a.x,a.y,a.z)||1;return mul(a,1/d)};
 function shade(hex,f=1,alpha=1){const h=hex.replace('#','');const v=[0,2,4].map(i=>clamp(Math.round(parseInt(h.slice(i,i+2),16)*f),0,255));return`rgba(${v.join(',')},${alpha})`}
-let projector,faces=[];function makeProjector(mode){const{w,h}=scene3d;let eye,forward,up,right,fov,viewport;if(mode==='orbit'){const tg=V(orbit.panX,.8,orbit.panZ),az=orbit.az,el=orbit.el;eye=add(tg,V(orbit.dist*Math.sin(az)*Math.cos(el),orbit.dist*Math.sin(el),orbit.dist*Math.cos(az)*Math.cos(el)));forward=norm(sub(tg,eye));viewport={x:0,y:0,w,h};fov=rad(56)}else{const c=state.camera,ya=rad(c.yaw),pi=rad(c.pitch);eye=V(c.x,c.height,c.z);forward=norm(V(Math.sin(ya)*Math.cos(pi),Math.sin(pi),-Math.cos(ya)*Math.cos(pi)));let vw=Math.max(100,w-28),vh=vw*9/16;if(vh>h-42){vh=h-42;vw=vh*16/9}viewport={x:(w-vw)/2,y:(h-vh)/2,w:vw,h:vh};fov=2*Math.atan(24/(2*c.focalLength))}right=norm(cross(forward,V(0,1,0)));up=norm(cross(right,forward));return{eye,forward,right,up,fov,viewport}}
+let projector,faces=[];function makeProjector(mode){const{w,h}=scene3d;let eye,forward,up,right,fov,viewport;if(mode==='orbit'){const tg=V(orbit.panX,1.22,orbit.panZ),az=orbit.az,el=orbit.el;eye=add(tg,V(orbit.dist*Math.sin(az)*Math.cos(el),orbit.dist*Math.sin(el),orbit.dist*Math.cos(az)*Math.cos(el)));forward=norm(sub(tg,eye));viewport={x:0,y:0,w,h};fov=rad(56)}else{const c=state.camera,ya=rad(c.yaw),pi=rad(c.pitch);eye=V(c.x,c.height,c.z);forward=norm(V(Math.sin(ya)*Math.cos(pi),Math.sin(pi),-Math.cos(ya)*Math.cos(pi)));let vw=Math.max(100,w-28),vh=vw*9/16;if(vh>h-42){vh=h-42;vw=vh*16/9}viewport={x:(w-vw)/2,y:(h-vh)/2,w:vw,h:vh};fov=2*Math.atan(24/(2*c.focalLength))}right=norm(cross(forward,V(0,1,0)));up=norm(cross(right,forward));return{eye,forward,right,up,fov,viewport}}
 function cameraPoint(p){const d=sub(p,projector.eye);return{x:dot(d,projector.right),y:dot(d,projector.up),z:dot(d,projector.forward)}}
 function viewPoint(p){const vp=projector.viewport,sc=(vp.h/2)/Math.tan(projector.fov/2);return{x:vp.x+vp.w/2+p.x/p.z*sc,y:vp.y+vp.h/2-p.y/p.z*sc,z:p.z}}
 function project(p){const cp=cameraPoint(p);if(cp.z<.08)return null;return viewPoint(cp)}
@@ -391,37 +545,81 @@ function addSphere(x,z,y,r,color,alpha=1){const n=10,rings=5;for(let j=0;j<rings
 function groundEllipse(x,z,rx,rz,col){const pts=[];for(let i=0;i<20;i++){let a=i/20*Math.PI*2;pts.push(V(x+Math.cos(a)*rx,.018,z+Math.sin(a)*rz))}pushFace(pts,col,.64)}
 function drawLine3(c,a,b,color,width=1,dashed=null){let ca=cameraPoint(a),cb=cameraPoint(b),eps=.08;if(ca.z<eps&&cb.z<eps)return;if(ca.z<eps){const t=(eps-ca.z)/(cb.z-ca.z);ca=add(ca,mul(sub(cb,ca),t))}if(cb.z<eps){const t=(eps-cb.z)/(ca.z-cb.z);cb=add(cb,mul(sub(ca,cb),t))}const p=viewPoint(ca),q=viewPoint(cb);c.lineWidth=width;c.strokeStyle=color;c.setLineDash(dashed||[]);c.beginPath();c.moveTo(p.x,p.y);c.lineTo(q.x,q.y);c.stroke();c.setLineDash([])}
 function applyFaces(c){faces.sort((a,b)=>b.depth-a.depth);for(const f of faces){if(f.pts.some(p=>!Number.isFinite(p.x)||!Number.isFinite(p.y)))continue;c.save();c.globalAlpha=f.alpha;poly2(c,f.pts,f.color,f.stroke||null);c.restore()}faces.length=0}
-function drawWorld(){if(!g3||!scene3d)return;const c=g3,{w,h}=scene3d;c.clearRect(0,0,w,h);projector=makeProjector(viewMode);const vp=projector.viewport;const grad=c.createLinearGradient(0,0,0,h);grad.addColorStop(0,'#1a2225');grad.addColorStop(.55,'#141e20');grad.addColorStop(1,'#0e1619');c.fillStyle=grad;c.fillRect(0,0,w,h);
-  if(viewMode==='shot'){c.fillStyle='#050b12';c.fillRect(0,0,w,h);c.save();c.beginPath();c.rect(vp.x,vp.y,vp.w,vp.h);c.clip();let s=c.createLinearGradient(0,vp.y,0,vp.y+vp.h);s.addColorStop(0,'#252f30');s.addColorStop(1,'#101819');c.fillStyle=s;c.fillRect(vp.x,vp.y,vp.w,vp.h)}
+function drawWorld(){if(!g3||!scene3d)return;const c=g3,{w,h}=scene3d;c.clearRect(0,0,w,h);projector=makeProjector(viewMode);const vp=projector.viewport;const grad=c.createLinearGradient(0,0,0,h);grad.addColorStop(0,'#2b332f');grad.addColorStop(.54,'#1c2421');grad.addColorStop(1,'#111917');c.fillStyle=grad;c.fillRect(0,0,w,h);
+  if(viewMode==='shot'){c.fillStyle='#0e1314';c.fillRect(0,0,w,h);c.save();c.beginPath();c.rect(vp.x,vp.y,vp.w,vp.h);c.clip();let s=c.createLinearGradient(0,vp.y,0,vp.y+vp.h);s.addColorStop(0,'#2b322e');s.addColorStop(1,'#181d1b');c.fillStyle=s;c.fillRect(vp.x,vp.y,vp.w,vp.h)}
   // stage platform + house walls, no physical front wall (cutaway)
-  pushFace([V(-6,-.04,-4.5),V(6,-.04,-4.5),V(6,-.04,4.5),V(-6,-.04,4.5)],'#2b3531',1);
-  pushFace([V(-6,0,-4.5),V(6,0,-4.5),V(6,3.2,-4.5),V(-6,3.2,-4.5)],'#39453e',viewMode==='shot'?.85:.64);
-  pushFace([V(-6,0,-4.5),V(-6,0,4.5),V(-6,3.2,4.5),V(-6,3.2,-4.5)],'#303b38',viewMode==='shot'?.58:.32);
-  pushFace([V(6,0,-4.5),V(6,0,4.5),V(6,3.2,4.5),V(6,3.2,-4.5)],'#313c3a',viewMode==='shot'?.58:.28);
+  pushFace([V(-6,-.04,-4.5),V(6,-.04,-4.5),V(6,-.04,4.5),V(-6,-.04,4.5)],'#504c43',1);
+  pushFace([V(-6,0,-4.5),V(6,0,-4.5),V(6,3.2,-4.5),V(-6,3.2,-4.5)],'#444941',viewMode==='shot'?.97:.86);
+  pushFace([V(-6,0,-4.5),V(-6,0,4.5),V(-6,3.2,4.5),V(-6,3.2,-4.5)],'#3b413c',viewMode==='shot'?.88:.75);
+  pushFace([V(6,0,-4.5),V(6,0,4.5),V(6,3.2,4.5),V(6,3.2,-4.5)],'#313d38',viewMode==='shot'?.82:.62);
   applyFaces(c);
+  // Practical set dressing: glazed back windows, wooden panels, warm sconces.
+  const win3=(x,w)=>{
+    pushFace([V(x,1.17,-4.463),V(x+w,1.17,-4.463),V(x+w,2.78,-4.463),V(x,2.78,-4.463)],'#172b2d',.97);
+    pushFace([V(x+.09,1.27,-4.458),V(x+w-.09,1.27,-4.458),V(x+w-.09,2.69,-4.458),V(x+.09,2.69,-4.458)],'#486468',.79);
+    pushFace([V(x+.09,1.27,-4.450),V(x+w*.48,1.27,-4.450),V(x+w*.66,2.69,-4.450),V(x+.24,2.69,-4.450)],'#acc4b1',.085);
+  };
+  win3(-4.96,2.32);win3(1.83,2.35);
+  // wall picture in a recessed frame
+  pushFace([V(-1.11,1.48,-4.45),V(.48,1.48,-4.45),V(.48,2.55,-4.45),V(-1.11,2.55,-4.45)],'#907c67',.9);
+  pushFace([V(-1.03,1.56,-4.44),V(.40,1.56,-4.44),V(.40,2.47,-4.44),V(-1.03,2.47,-4.44)],'#455b55',.95);
+  pushFace([V(-1.03,1.56,-4.435),V(.40,1.56,-4.435),V(-.40,2.36,-4.435)],'#7c8271',.55);
+  // floor rug grounded in the room's arrangement
+  pushFace([V(-4.05,.022,-2.8),V(2.05,.022,-2.8),V(2.05,.022,1.05),V(-4.05,.022,1.05)],'#6f6b60',.82);
+  pushFace([V(-3.86,.026,-2.64),V(1.87,.026,-2.64),V(1.87,.026,.89),V(-3.86,.026,.89)],'#8d8677',.31);
+  applyFaces(c);
+  for(const x of [-4.96,-2.64,1.83,4.18])drawLine3(c,V(x,1.15,-4.426),V(x,2.79,-4.426),'#e8d1ab70',2.2);
+  for(const [x,w] of [[-4.96,2.32],[1.83,2.35]]){
+    drawLine3(c,V(x,1.17,-4.426),V(x+w,1.17,-4.426),'#e2c59b82',2.3);
+    drawLine3(c,V(x,2.78,-4.426),V(x+w,2.78,-4.426),'#e2c59b78',2.3);
+    drawLine3(c,V(x+w/2,1.17,-4.426),V(x+w/2,2.78,-4.426),'#d8d8bf5d',1.4);
+    drawLine3(c,V(x,2.0,-4.426),V(x+w,2.0,-4.426),'#d3d4bd61',1.2);
+  }
   // light shafts through stage
-  if(viewMode==='orbit'){const light=project(V(2,2.8,-3));if(light){let g=c.createRadialGradient(light.x,light.y,0,light.x,light.y,130);g.addColorStop(0,'#c1e8bc13');g.addColorStop(1,'transparent');c.fillStyle=g;c.beginPath();c.arc(light.x,light.y,130,0,Math.PI*2);c.fill()}}
-  for(let x=-6;x<=6.01;x+=3)drawLine3(c,V(x,.012,-4.5),V(x,.012,4.5),x%3===0?'#c7e7de0c':'#b1d7cd07',.7);
-  for(let z=-4.5;z<=4.51;z+=3)drawLine3(c,V(-6,.012,z),V(6,.012,z),Math.abs(z-.5)%3===0?'#c7e7de0c':'#b1d7cd07',.7);
-  drawLine3(c,V(-6,.02,4.5),V(6,.02,4.5),'#abdaca16',1.2);drawLine3(c,V(-6,.02,-4.5),V(6,.02,-4.5),'#abdaca20',1.2);
+  if(viewMode==='orbit'){const light=project(V(2,2.8,-3));if(light){let g=c.createRadialGradient(light.x,light.y,0,light.x,light.y,130);g.addColorStop(0,'#f7d1a322');g.addColorStop(1,'transparent');c.fillStyle=g;c.beginPath();c.arc(light.x,light.y,130,0,Math.PI*2);c.fill()}}
+  for(let x=-6;x<=6.01;x+=2.4)drawLine3(c,V(x,.012,-4.5),V(x,.012,4.5),x%3===0?'#dfc6a310':'#b1b8ad08',.7);
+  for(let z=-4.5;z<=4.51;z+=2.2)drawLine3(c,V(-6,.012,z),V(6,.012,z),Math.abs(z-.5)%3===0?'#dfc6a310':'#b1b8ad08',.7);
+  drawLine3(c,V(-6,.02,4.5),V(6,.02,4.5),'#ddd0b423',1.2);drawLine3(c,V(-6,.02,-4.5),V(6,.02,-4.5),'#ddd0b42b',1.2);
   // shadows / scenery
-  for(const p of state.props){groundEllipse(p.x,p.z,p.width*.65,p.depth*.7,'#031019');if(p.type==='sofa'){addBox(p.x,p.z,.13,p.width,p.depth,.46,'#64727b',p.yaw);addBox(p.x,p.z-p.depth*.36,.42,p.width,.26,.51,'#526a74',p.yaw);addBox(p.x-p.width*.43,p.z,.4,.27,p.depth,.4,'#566874',p.yaw);addBox(p.x+p.width*.43,p.z,.4,.27,p.depth,.4,'#566874',p.yaw)}else if(p.type==='table'){for(const dx of [-.57,.57])for(const dz of [-.24,.24])addBox(p.x+dx,p.z+dz,.02,.12,.12,.39,'#545b61');addBox(p.x,p.z,.39,p.width,p.depth,.13,'#a49d89')}else if(p.type==='lamp'){addCylinder(p.x,p.z,0,.18,.13,.07,'#707e7c');addCylinder(p.x,p.z,.05,.036,.036,1.5,'#9a9e91');addCylinder(p.x,p.z,1.55,.17,.28,.36,'#efd6a6',.86)}}
-  for(const a of state.actors){const h=a.height,scale=h/1.74;groundEllipse(a.x,a.z,.39,.34,'#06171e');const rr=rad(a.yaw),front=V(Math.sin(rr),0,-Math.cos(rr)),side=V(Math.cos(rr),0,Math.sin(rr));const place=(s,f)=>V(a.x+side.x*s+front.x*f,0,a.z+side.z*s+front.z*f);const col=a.color;for(let s of [-.15,.15]){const p=place(s,0);addCylinder(p.x,p.z,.045,.105,.09,.68*scale,shade(col,.65),1,8);addBox(p.x,p.z,.025,.24,.37,.10,'#38444d',a.yaw)}addCylinder(a.x,a.z,.70*scale,.265,.31,.74*scale,col,1,12);for(let s of [-.36,.36]){const p=place(s,0);addCylinder(p.x,p.z,.78*scale,.105,.115,.59*scale,shade(col,.85),1,8);addSphere(p.x,p.z,.79*scale,.105,'#dbbca6')}addCylinder(a.x,a.z,1.37*scale,.105,.085,.12*scale,'#dab9a6');const head=place(0,.01);addSphere(head.x,head.z,1.61*scale,.195*scale,'#e7c4ae');const nose=place(0,.19);addSphere(nose.x,nose.z,1.61*scale,.037*scale,'#cfa18e');const chest=place(0,.28);addBox(chest.x,chest.z,1.17*scale,.16,.05,.06,'#dfefe6',a.yaw)}
+  for(const p of state.props){groundEllipse(p.x,p.z,p.width*.65,p.depth*.7,'#171911');if(p.type==='sofa'){addBox(p.x,p.z,.13,p.width,p.depth,.46,'#939891',p.yaw);addBox(p.x,p.z-p.depth*.36,.42,p.width,.26,.51,'#6c7977',p.yaw);addBox(p.x-p.width*.43,p.z,.4,.27,p.depth,.4,'#85908a',p.yaw);addBox(p.x+p.width*.43,p.z,.4,.27,p.depth,.4,'#85908a',p.yaw)}else if(p.type==='table'){for(const dx of [-.57,.57])for(const dz of [-.24,.24])addBox(p.x+dx,p.z+dz,.02,.12,.12,.39,'#584a40');addBox(p.x,p.z,.39,p.width,p.depth,.13,'#b99b77')}else if(p.type==='lamp'){addCylinder(p.x,p.z,0,.18,.13,.07,'#676c62');addCylinder(p.x,p.z,.05,.036,.036,1.5,'#99978a');addCylinder(p.x,p.z,1.55,.17,.28,.36,'#f4d7a9',.86)}}
+  for(const a of state.actors){const h=a.height,scale=h/1.74;groundEllipse(a.x,a.z,.39,.34,'#101510');const rr=rad(a.yaw),front=V(Math.sin(rr),0,-Math.cos(rr)),side=V(Math.cos(rr),0,Math.sin(rr));const place=(s,f)=>V(a.x+side.x*s+front.x*f,0,a.z+side.z*s+front.z*f);const col=a.color;for(let s of [-.15,.15]){const p=place(s,0);addCylinder(p.x,p.z,.045,.105,.09,.68*scale,shade(col,.65),1,8);addBox(p.x,p.z,.025,.24,.37,.10,'#3b3833',a.yaw)}addCylinder(a.x,a.z,.70*scale,.265,.31,.74*scale,col,1,12);for(let s of [-.36,.36]){const p=place(s,0);addCylinder(p.x,p.z,.78*scale,.105,.115,.59*scale,shade(col,.85),1,8);addSphere(p.x,p.z,.79*scale,.105,'#dbbca6')}addCylinder(a.x,a.z,1.37*scale,.105,.085,.12*scale,'#dab9a6');const head=place(0,.01);addSphere(head.x,head.z,1.61*scale,.195*scale,'#e7c4ae');const nose=place(0,.19);addSphere(nose.x,nose.z,1.61*scale,.037*scale,'#cfa18e');
+    // hair cap and silhouette, visible at high and frontal angles
+    addSphere(head.x,head.z-.055,1.73*scale,.165*scale,a.id==='actor-2'?'#34312f':a.id==='actor-3'?'#353635':'#4b3a30');
+    const chest=place(0,.28);addBox(chest.x,chest.z,1.17*scale,.16,.045,.045,'#e7d7c3',a.yaw);
+    const belt=place(0,.03);addBox(belt.x,belt.z,.70*scale,.44,.29,.09,'#524a45',a.yaw)}
   applyFaces(c);
   // field-of-view rays and camera rig only in orbit mode
-  if(viewMode==='orbit'){const ca=state.camera,ya=rad(ca.yaw),fov=2*Math.atan(36/(2*ca.focalLength)),length=4.4,dir=V(Math.sin(ya),0,-Math.cos(ya)),right=V(Math.cos(ya),0,Math.sin(ya)),org=V(ca.x,ca.height,ca.z),base=add(org,mul(dir,length)),half=length*Math.tan(fov/2);let L=add(base,mul(right,-half)),R=add(base,mul(right,half));pushFace([org,L,R],'#9cf8cd',.1);applyFaces(c);drawLine3(c,org,L,'#b8ffe063',1);drawLine3(c,org,R,'#b8ffe063',1);drawLine3(c,L,R,'#c5ffe251',1,[4,4]);addBox(ca.x,ca.z,ca.height-.15,.32,.42,.25,'#b4e2cf',ca.yaw);addCylinder(ca.x,ca.z,.04,.045,.045,Math.max(.1,ca.height-.17),'#7e9e9e',.8,6);applyFaces(c)}
+  if(viewMode==='orbit'){const ca=state.camera,ya=rad(ca.yaw),fov=2*Math.atan(36/(2*ca.focalLength)),length=4.4,dir=V(Math.sin(ya),0,-Math.cos(ya)),right=V(Math.cos(ya),0,Math.sin(ya)),org=V(ca.x,ca.height,ca.z),base=add(org,mul(dir,length)),half=length*Math.tan(fov/2);let L=add(base,mul(right,-half)),R=add(base,mul(right,half));pushFace([org,L,R],'#d8c4a3',.1);applyFaces(c);drawLine3(c,org,L,'#e7c59a68',1);drawLine3(c,org,R,'#e7c59a68',1);drawLine3(c,L,R,'#ebd1a059',1,[4,4]);addBox(ca.x,ca.z,ca.height-.15,.32,.42,.25,'#e0cfb2',ca.yaw);addCylinder(ca.x,ca.z,.04,.045,.045,Math.max(.1,ca.height-.17),'#8e887d',.8,6);applyFaces(c)}
   // labels projected onto scene; keep label above actor head
-  for(const a of state.actors){const p=project(V(a.x,a.height+.27,a.z));if(!p)continue;if(p.x<vp.x-80||p.x>vp.x+vp.w+80||p.y<vp.y-30||p.y>vp.y+vp.h+30)continue;const sel=state.selection.id===a.id,label=a.name,width=clamp(label.length*11+19,40,120);if(sel){roundRect(c,p.x-width/2,p.y-9,width,19,9,'#e7dfcfeb');textOn(c,label,p.x,p.y+1,'#243029',10,'center')}else{textOn(c,label,p.x,p.y,'#b8cbbbaa',10,'center')}}
+  for(const a of state.actors){const p=project(V(a.x,a.height+.27,a.z));if(!p)continue;if(p.x<vp.x-80||p.x>vp.x+vp.w+80||p.y<vp.y-30||p.y>vp.y+vp.h+30)continue;const sel=state.selection.id===a.id,label=a.name,width=clamp(label.length*11+19,40,120);if(sel){roundRect(c,p.x-width/2,p.y-9,width,19,9,'#e7dfcfeb');textOn(c,label,p.x,p.y+1,'#243029',10,'center')}else{c.fillStyle='#d3d2c3a8';c.beginPath();c.arc(p.x,p.y,2.1,0,Math.PI*2);c.fill()}}
   if(viewMode==='shot'){
-    c.restore();const v=vp;c.strokeStyle='#cffde64f';c.lineWidth=1;c.strokeRect(v.x+.5,v.y+.5,v.w-1,v.h-1);let xx=v.x+14,yy=v.y+16;textOn(c,'VIEW',xx,yy,'#c7c5b688',10,'left','monospace');textOn(c,`${state.camera.focalLength} MM  ·  ${fmt(state.camera.height)} M`,v.x+v.w-12,yy,'#c6e1d7',10,'right','monospace');
-    const corner=17;c.strokeStyle='#b8ffe8a1';c.lineWidth=1.4;for(const sx of [v.x+10,v.x+v.w-10])for(const sy of [v.y+10,v.y+v.h-10]){const dx=sx<v.x+v.w/2?1:-1,dy=sy<v.y+v.h/2?1:-1;c.beginPath();c.moveTo(sx+corner*dx,sy);c.lineTo(sx,sy);c.lineTo(sx,sy+corner*dy);c.stroke()}
-  }else{const w1=scene3d.w,h1=scene3d.h;const p=project(V(0,0,0));if(p){c.strokeStyle='#c2eee247';c.beginPath();c.moveTo(p.x-9,p.y);c.lineTo(p.x+9,p.y);c.moveTo(p.x,p.y-9);c.lineTo(p.x,p.y+9);c.stroke()}}
+    c.restore();const v=vp;c.strokeStyle='#e7ca9b52';c.lineWidth=1;c.strokeRect(v.x+.5,v.y+.5,v.w-1,v.h-1);let xx=v.x+14,yy=v.y+16;textOn(c,'VIEW',xx,yy,'#c7c5b688',10,'left','monospace');textOn(c,`${state.camera.focalLength} MM  ·  ${fmt(state.camera.height)} M`,v.x+v.w-12,yy,'#c6e1d7',10,'right','monospace');
+    const corner=17;c.strokeStyle='#f1d8ac83';c.lineWidth=1.4;for(const sx of [v.x+10,v.x+v.w-10])for(const sy of [v.y+10,v.y+v.h-10]){const dx=sx<v.x+v.w/2?1:-1,dy=sy<v.y+v.h/2?1:-1;c.beginPath();c.moveTo(sx+corner*dx,sy);c.lineTo(sx,sy);c.lineTo(sx,sy+corner*dy);c.stroke()}
+  }else{const w1=scene3d.w,h1=scene3d.h;const p=project(V(0,0,0));if(p){c.strokeStyle='#e9d0a047';c.beginPath();c.moveTo(p.x-9,p.y);c.lineTo(p.x+9,p.y);c.moveTo(p.x,p.y-9);c.lineTo(p.x,p.y+9);c.stroke()}}
 }
 viewCanvas.addEventListener('pointerdown',e=>{const q=canvasPos(e,viewCanvas);vrDrag={pointer:e.pointerId,x:q.x,y:q.y,yaw:state.camera.yaw,pitch:state.camera.pitch,az:orbit.az,el:orbit.el,mode:viewMode,moved:false};if(viewMode==='shot')historyPush();viewCanvas.setPointerCapture(e.pointerId);viewCanvas.style.cursor='grabbing'});
 viewCanvas.addEventListener('pointermove',e=>{if(!vrDrag||vrDrag.pointer!==e.pointerId)return;const q=canvasPos(e,viewCanvas),dx=q.x-vrDrag.x,dy=q.y-vrDrag.y;if(Math.abs(dx)+Math.abs(dy)>2)vrDrag.moved=true;if(vrDrag.mode==='shot'){state.camera.yaw=clamp(vrDrag.yaw+dx*.22,-180,180);state.camera.pitch=clamp(vrDrag.pitch-dy*.17,-40,40);commit({cameraChanged:true});if(frameCount%5===0)renderInspector()}else{orbit.az=vrDrag.az-dx*.009;orbit.el=clamp(vrDrag.el+dy*.008,.12,1.42);dirty=true}});
 function endView(e){if(vrDrag&&vrDrag.pointer===e.pointerId){const isCam=vrDrag.mode==='shot',was=vrDrag.moved;vrDrag=null;viewCanvas.style.cursor=isCam?'move':'grab';if(isCam&&was){renderInspector();renderShots();clearTimeout(saveTimer);flush()}}}
 viewCanvas.addEventListener('pointerup',endView);viewCanvas.addEventListener('pointercancel',endView);
 viewCanvas.addEventListener('wheel',e=>{e.preventDefault();if(viewMode==='shot'){state.camera.focalLength=clamp(state.camera.focalLength+Math.sign(e.deltaY)*2,18,100);commit({cameraChanged:true});renderInspector();renderShots()}else{orbit.dist=clamp(orbit.dist+(e.deltaY>0?1.2:-1.2),6.5,31);dirty=true}},{passive:false});
+let shotPreviewsTimer=0;
+function scheduleShotPreviews(){clearTimeout(shotPreviewsTimer);shotPreviewsTimer=setTimeout(renderShotPreviews,140)}
+function renderShotPreviews(){
+  if(!state.shots.length||!scene3d)return;
+  const saveCtx=g3,saveScene=scene3d,saveView=viewMode,saveCamera=copy(state.camera),saveProjector=projector;
+  try{
+    for(const shotData of state.shots){
+      const canvas=document.querySelector(`[data-preview-shot="${shotData.id}"]`);
+      if(!canvas)continue;
+      const ctx=canvas.getContext('2d');
+      g3=ctx;scene3d={w:canvas.width,h:canvas.height};viewMode='shot';Object.assign(state.camera,shotData.camera);
+      ctx.setTransform(1,0,0,1,0,0);drawWorld();
+      // Intentional cinematic matte lines, no toy character pictograms.
+      ctx.fillStyle='rgba(7,10,10,.56)';ctx.fillRect(0,0,canvas.width,11);ctx.fillRect(0,canvas.height-11,canvas.width,11);
+    }
+  }catch(e){console.warn('Shot preview unavailable',e)}
+  finally{g3=saveCtx;scene3d=saveScene;viewMode=saveView;projector=saveProjector;Object.assign(state.camera,saveCamera);dirty=true}
+}
 function tick(){frameCount++;if(dirty||frameCount%80===0){draw2D();drawWorld();dirty=false}requestAnimationFrame(tick)}
 resize();connect();requestAnimationFrame(tick);
 })();
