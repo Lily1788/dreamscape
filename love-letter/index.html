@@ -56,7 +56,9 @@ const words = [
 ];
 const tips = [4, 8, 12, 16, 20];
 const W = 1920, H = 1080;
-let tracker, stream, recorder, recordingStream, downloadUrl, settings;
+let tracker, stream, recordingStream, downloadUrl, settings;
+let mp4Output, mp4AudioSource, recordingStartMs=0, recordingBusy=false;
+let clipEvents=[], activeClip=null, lastSoundAt=-Infinity, recordingError=null;
 const hands = new Map();
 get('mirror').addEventListener('change',resetReveal);
 get('framing').addEventListener('change',resetReveal);
@@ -284,15 +286,15 @@ function lips(x,y,scale,tilt=0) {
   ctx.restore();
 }
 
-let sound, mix, clipsLoading;
+let sound, clipsLoading;
 const clips = new Map();
 async function initSound() {
   const Audio = window.AudioContext || window.webkitAudioContext;
   if (!Audio) throw new Error('AudioContext is unavailable');
   if (!sound) {
     sound=new Audio({sampleRate:48000});
-    // One continuously live audio track receives all word/charm effects.
-    mix=sound.createMediaStreamDestination();
+    // Sound effects play locally; a separate, event-based AAC soundtrack is
+    // built for MP4 so silence stays silent and no microphone is recorded.
   }
   await sound.resume();
   if (!clipsLoading) {
@@ -302,22 +304,44 @@ async function initSound() {
     })).catch(error=>{clipsLoading=null;throw error;});
   }
   await clipsLoading;
-  if (!mix.stream.getAudioTracks().length) throw new Error('Recording audio track is unavailable');
 }
 
 function playClip(key) {
   const buffer=clips.get(String(key));
-  if (!buffer || sound.state!=='running') return buffer?.duration ?? .46;
+  if (!buffer || sound?.state!=='running') return buffer?.duration ?? .46;
+  const now=performance.now();
+  // No accidental rapid-fire narration: every word is a separate event.
+  if (now-lastSoundAt<520) return buffer.duration;
+  lastSoundAt=now;
+  if (activeClip) {
+    const {source,gain,event}=activeClip;
+    const at=sound.currentTime;
+    gain.gain.cancelScheduledValues(at);
+    gain.gain.setValueAtTime(gain.gain.value,at);
+    gain.gain.linearRampToValueAtTime(0,at+.018);
+    try { source.stop(at+.020); } catch {}
+    if (event) event.stopAt=Math.min(event.stopAt,(now-recordingStartMs)/1000+.020);
+    activeClip=null;
+  }
   const source=sound.createBufferSource();
+  const gain=sound.createGain();
   source.buffer=buffer;
-  source.connect(sound.destination);
-  source.connect(mix);
+  gain.gain.value=1;
+  source.connect(gain).connect(sound.destination);
+  let event=null;
+  if (mode==='recording' && recordingStartMs>0) {
+    const start=Math.max(0,(now-recordingStartMs)/1000);
+    event={key:String(key),start,stopAt:start+buffer.duration};
+    clipEvents.push(event);
+  }
+  activeClip={source,gain,event};
+  source.onended=()=>{if(activeClip?.source===source) activeClip=null;};
   source.start();
   return buffer.duration;
 }
 
 function activate(hand, index, now) {
-  if (now-(hand.hits[index]??-1000)<420) return;
+  if (now-(hand.hits[index]??-1000)<850) return;
   hand.hits[index]=now;
   const item=hand.items[index];
   const origin=hand.points[index];
@@ -357,25 +381,58 @@ function track(now, rect, options) {
       const prev=existing?.points[j];
       return prev ? {x:prev.x+.58*(p.x-prev.x),y:prev.y+.58*(p.y-prev.y)} : p;
     });
-    const hand={side,points,items,fingerOrder,hits:existing?.hits??{},pinch:existing?.pinch,thumbTouch:existing?.thumbTouch,revealAt:existing?.revealAt??now,lastSeen:now};
+    const hand={
+      side,points,items,fingerOrder,hits:existing?.hits??{},
+      pinch:existing?.pinch??null, pinchCandidate:existing?.pinchCandidate??null,
+      pinchCandidateAt:existing?.pinchCandidateAt??0,
+      pinchReleaseAt:existing?.pinchReleaseAt??0, pinchArmed:existing?.pinchArmed??false,
+      thumbTouch:existing?.thumbTouch??false,
+      thumbCandidateAt:existing?.thumbCandidateAt??0,
+      revealAt:existing?.revealAt??now,lastSeen:now
+    };
     hands.set(key,hand);
     const span=Math.max(35,distance(raw[0],raw[9]));
     const closest=fingerOrder.reduce((a,b)=>distance(raw[4],raw[a])<distance(raw[4],raw[b])?a:b);
-    if (hand.pinch && distance(raw[4],raw[hand.pinch])>span*.30) hand.pinch=null;
-    if (!hand.pinch && distance(raw[4],raw[closest])<span*.19) {
-      hand.pinch=closest;
-      activate(hand,closest,now);
+    const closeness=distance(raw[4],raw[closest])/span;
+    // Need a genuine open -> stable close -> release sequence; landmark jitter
+    // or temporarily lost tracking must never fire dozens of overlapping words.
+    if (closeness>.34) {
+      if (!hand.pinchReleaseAt) hand.pinchReleaseAt=now;
+      if (now-hand.pinchReleaseAt>160) {
+        hand.pinch=null;
+        hand.pinchArmed=true;
+      }
+      hand.pinchCandidate=null;
+    } else {
+      hand.pinchReleaseAt=0;
+      if (!hand.pinch && hand.pinchArmed && closeness<.16) {
+        if (hand.pinchCandidate!==closest) {
+          hand.pinchCandidate=closest;
+          hand.pinchCandidateAt=now;
+        } else if (now-hand.pinchCandidateAt>=105) {
+          hand.pinch=closest;
+          hand.pinchArmed=false;
+          hand.pinchCandidate=null;
+          activate(hand,closest,now);
+        }
+      } else if (closeness>=.16) {
+        hand.pinchCandidate=null;
+      }
     }
     const other=detected.find(candidate=>candidate.key!==key);
     if (other) {
-      const across=Math.min(...tips.map(tip=>distance(raw[4],other.raw[tip])));
-      if (across>span*.31) hand.thumbTouch=false;
-      if (!hand.thumbTouch && across<span*.19) {
-        hand.thumbTouch=true;
-        activate(hand,4,now);
-      }
+      const across=Math.min(...tips.map(tip=>distance(raw[4],other.raw[tip])))/span;
+      if (across>.38) {hand.thumbTouch=false;hand.thumbCandidateAt=0;}
+      else if (!hand.thumbTouch && across<.15) {
+        if (!hand.thumbCandidateAt) hand.thumbCandidateAt=now;
+        else if(now-hand.thumbCandidateAt>120) {
+          hand.thumbTouch=true;
+          activate(hand,4,now);
+        }
+      } else if(across>=.15) hand.thumbCandidateAt=0;
     } else {
       hand.thumbTouch=false;
+      hand.thumbCandidateAt=0;
     }
   }
 }
@@ -557,8 +614,8 @@ cameraButton.addEventListener('click',async () => {
     await Promise.all([loadTracker(),audioReady]);
     status.textContent='Hold up both open palms.';
     cameraButton.textContent='Close camera';
-    record.disabled=!(canvas.captureStream && window.MediaRecorder);
-    if (record.disabled) status.textContent='Video recording is unavailable in this browser.';
+    record.disabled=!(canvas.captureStream && window.VideoEncoder && window.AudioEncoder);
+    if (record.disabled) status.textContent='MP4 recording requires WebCodecs in this browser.';
   } catch (error) {
     stopCamera();
     status.textContent = error.name === 'NotAllowedError'
@@ -569,13 +626,38 @@ cameraButton.addEventListener('click',async () => {
   }
 });
 
-function finishRecording() {
-  if (recorder?.state === 'recording') {
-    record.disabled=true;
-    recorder.stop();
+// Build the soundtrack only from sound-effect trigger events. Every other
+// sample is zero, from the first video frame through the final video frame.
+// There is no microphone, webcam audio, tab audio, or ambient soundtrack.
+function buildTriggeredAudio(durationSeconds,events) {
+  const sampleRate=48000;
+  const count=Math.max(1024,Math.ceil(durationSeconds*sampleRate));
+  const audio=new AudioBuffer({numberOfChannels:2,length:count,sampleRate});
+  const left=audio.getChannelData(0),right=audio.getChannelData(1);
+  for (const event of events) {
+    const clip=clips.get(event.key);
+    if (!clip) continue;
+    const first=Math.max(0,Math.round(event.start*sampleRate));
+    const remaining=Math.min(
+      count-first,
+      Math.max(0,Math.round((event.stopAt-event.start)*sampleRate)),
+      Math.floor(clip.duration*sampleRate)
+    );
+    if (remaining<=0) continue;
+    const sourceLeft=clip.getChannelData(0);
+    const sourceRight=clip.getChannelData(Math.min(1,clip.numberOfChannels-1));
+    const rate=clip.sampleRate/sampleRate;
+    const fade=Math.min(480,Math.floor(remaining/3)); // 10 ms click-free edges
+    for(let i=0;i<remaining;i++) {
+      const src=Math.min(sourceLeft.length-1,Math.floor(i*rate));
+      const envelope=fade ? Math.min(1,i/fade,(remaining-1-i)/fade) : 1;
+      const at=first+i;
+      left[at]=Math.max(-1,Math.min(1,left[at]+sourceLeft[src]*envelope));
+      right[at]=Math.max(-1,Math.min(1,right[at]+sourceRight[src]*envelope));
+    }
   }
+  return audio;
 }
-
 function unlock() {
   mode='idle';
   stage.classList.remove('is-recording');
@@ -585,73 +667,102 @@ function unlock() {
   record.textContent='● Record';
   record.disabled=!tracker || !stream;
   recordingStream?.getTracks().forEach(track=>track.stop());
+  recordingStream=null;
   layout();
 }
-
-// MP4 MUST explicitly request H.264 + AAC. A generic "video/mp4" can
-// contain Opus audio in Chromium, which some MP4 players cannot decode.
-const recordingTypes=[
-  'video/mp4;codecs="avc1.42E01E,mp4a.40.2"',
-  'video/mp4;codecs="avc1.424028,mp4a.40.2"',
-  'video/mp4;codecs="avc1,mp4a.40.2"',
-  'video/webm;codecs="vp8,opus"',
-  'video/webm;codecs="vp9,opus"',
-  'video/webm'
-];
+async function finishRecording() {
+  if(mode!=='recording' || recordingBusy) return;
+  recordingBusy=true;
+  record.disabled=true;
+  const elapsed=Math.max(.1,(performance.now()-recordingStartMs)/1000);
+  const events=clipEvents.slice();
+  mode='finalizing';
+  status.textContent='Encoding synchronized AAC audio…';
+  recordingStream?.getTracks().forEach(track=>track.stop());
+  try {
+    // One audio buffer spans exactly the recording duration, including silence.
+    const soundtrack=buildTriggeredAudio(elapsed,events);
+    await mp4AudioSource.add(soundtrack);
+    await mp4Output.finalize();
+    const actualType=await mp4Output.getMimeType();
+    if(!/mp4a\.40\.2/i.test(actualType) || !/avc1/i.test(actualType)) {
+      throw new Error('The output is not MP4 with H.264 and AAC: '+actualType);
+    }
+    const file=new Blob([mp4Output.target.buffer],{type:'video/mp4'});
+    if(downloadUrl) URL.revokeObjectURL(downloadUrl);
+    downloadUrl=URL.createObjectURL(file);
+    download.href=downloadUrl;
+    download.download='love-at-your-fingertips.mp4';
+    download.style.display='inline-block';
+    download.hidden=false;
+    download.click();
+    status.textContent='MP4 ready: H.264 + AAC, silent except triggered effects.';
+  } catch(error) {
+    console.error('MP4 encoding failed:',error);
+    status.textContent='MP4 recording failed. Browser AAC/H.264 encoding may be unsupported.';
+    if(mp4Output?.state==='started') await mp4Output.cancel().catch(()=>{});
+  } finally {
+    mp4Output=null;
+    mp4AudioSource=null;
+    clipEvents=[];
+    recordingBusy=false;
+    unlock();
+  }
+}
+// This recorder uses actual WebCodecs video AVC and AAC sound, not a
+// MediaRecorder MP4 that can silently substitute Opus (as in the old upload).
 async function startRecording() {
   try {
     await initSound();
-    // Ensure the same genuine typeface is present in the recorded canvas.
-    await document.fonts.load('italic 700 65px "Fraunces"').catch(()=>{});
-    if(mode!=='countdown') return; // User cancelled while preparing.
-    recordingStream=canvas.captureStream(30);
-    const track=mix.stream.getAudioTracks()[0];
-    if(!track || track.readyState!=='live') throw new Error('Audio track is not live');
-    recordingStream.addTrack(track.clone());
-    let chosenType;
-    for(const mimeType of recordingTypes) {
-      if(!MediaRecorder.isTypeSupported(mimeType)) continue;
-      try {
-        recorder=new MediaRecorder(recordingStream,{
-          mimeType, videoBitsPerSecond:9000000, audioBitsPerSecond:160000
-        });
-        chosenType=mimeType;
-        break;
-      } catch {} // Try the next supported codec/container pair.
+    if(mode!=='countdown') return;
+    if(!window.VideoEncoder || !window.AudioEncoder || !canvas.captureStream) {
+      throw new Error('WebCodecs encoder is unavailable');
     }
-    if(!recorder) throw new Error('No compatible recording encoder');
-    const chunks=[];
-    recorder.ondataavailable=event=>{if(event.data.size) chunks.push(event.data);};
-    recorder.onerror=()=>{status.textContent='Recording failed. Try again.';};
-    recorder.onstop=()=>{
-      const actualType=recorder.mimeType || chosenType;
-      const isMp4=/^video\/mp4/i.test(actualType);
-      unlock();
-      if (!chunks.length) { status.textContent='No video was captured. Try again.'; return; }
-      const file=new Blob(chunks,{type:isMp4?'video/mp4':'video/webm'});
-      if(downloadUrl) URL.revokeObjectURL(downloadUrl);
-      downloadUrl=URL.createObjectURL(file);
-      download.href=downloadUrl;
-      download.download='love-at-your-fingertips.'+(isMp4?'mp4':'webm');
-      download.style.display='inline-block';
-      download.hidden=false;
-      status.textContent=isMp4
-        ? 'MP4 with H.264 video and AAC audio is ready. Downloading…'
-        : 'This browser cannot encode MP4 + AAC; downloaded WebM with Opus audio instead.';
-      download.click();
-    };
-    sceneTime=performance.now();
-    recorder.start(500);
+    const {
+      Output,Mp4OutputFormat,BufferTarget,MediaStreamVideoTrackSource,
+      AudioBufferSource,Quality
+    }=await import('https://cdn.jsdelivr.net/npm/mediabunny@1.66.2/+esm');
+    if(mode!=='countdown') return;
+    recordingStream=canvas.captureStream(30);
+    const videoTrack=recordingStream.getVideoTracks()[0];
+    if(!videoTrack) throw new Error('Canvas capture track missing');
+    mp4Output=new Output({
+      format:new Mp4OutputFormat(),
+      target:new BufferTarget()
+    });
+    const videoSource=new MediaStreamVideoTrackSource(videoTrack,{
+      codec:'avc',quality:new Quality({bitrate:7500000}),latencyMode:'realtime'
+    });
+    mp4AudioSource=new AudioBufferSource({
+      codec:'aac',fullCodecString:'mp4a.40.2',
+      quality:new Quality({bitrate:160000})
+    });
+    mp4Output.addVideoTrack(videoSource,{frameRate:30});
+    mp4Output.addAudioTrack(mp4AudioSource);
+    recordingError=null;
+    videoSource.errorPromise.catch(error=>{
+      recordingError=error;
+      console.error('Video capture failed:',error);
+      status.textContent='Video encoding failed. Stop recording to finish.';
+    });
+    await mp4Output.start();
+    if(mode!=='countdown') {await mp4Output.cancel();return;}
+    clipEvents=[];
+    recordingStartMs=performance.now();
+    sceneTime=recordingStartMs;
     mode='recording';
     stage.classList.add('is-recording');
+    cameraButton.disabled=true;
     record.textContent='■ Stop recording';
-    status.textContent=chosenType.startsWith('video/mp4')
-      ? 'Recording MP4 · H.264 + AAC'
-      : 'Recording WebM · MP4/AAC unavailable in this browser';
+    status.textContent='Recording MP4 · AAC only when effects are triggered';
   } catch(error) {
-    console.error('Could not start recording with audio:',error);
+    console.error('Could not start synchronized MP4 recording:',error);
+    if(mp4Output?.state==='started') await mp4Output.cancel().catch(()=>{});
+    mp4Output=null;
+    mp4AudioSource=null;
+    recordingBusy=false;
     unlock();
-    status.textContent='Recording audio/encoding could not start. Reopen this page and try again.';
+    status.textContent='Recording requires browser H.264/AAC WebCodecs support. Please use updated Edge/Chrome.';
   }
 }
 record.addEventListener('click',()=>{
@@ -662,7 +773,7 @@ record.addEventListener('click',()=>{
     status.textContent='';
     return;
   }
-  // Start/resume Web Audio during the user gesture so effects are captured.
+  // The user gesture unlocks sound playback; only real trigger events enter MP4.
   initSound().catch(error=>console.error('Sound preparation failed:',error));
   settings=readSettings();
   mode='countdown';
@@ -680,7 +791,7 @@ record.addEventListener('click',()=>{
 });
 addEventListener('pagehide',()=>{
   clearInterval(countdown);
-  finishRecording();
+  if (mode==='recording') finishRecording();
   stopCamera();
 });
 // All module declarations and event listeners are now initialized.
