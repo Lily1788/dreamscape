@@ -54,17 +54,18 @@ test('single-finger tap produces one fixed ripple; similar poses and holding do 
   assert.equal(s.ripples.length,1);
   tap(734,296,'right');assert.equal(s.ripples.length,2);assert.equal(s.ripples[1].x,707);
 });
-test('wings need a closed-eye turn and two palms, then hold until fingers leave',()=>{
+test('wings appear during the closed-eye turn, and two palms switch to mist until fingers leave',()=>{
   const {s,step,now}=setup();s.enter(2,0,'');
   const fists=[[373,285,'fist'],[596,285,'fist','right']];
   const palms=[[373,285,'palm'],[596,285,'palm','right']];
   step(palms);step(fists,face(true));step(palms);
-  assert.equal(s.phase,2);
+  assert.equal(s.phase,2);assert.equal(s.wingStart,null);
   for(let i=0;i<35;i++){
     const a=i*.19;
     step([[373+20*Math.cos(a),285+20*Math.sin(a),'fist'],fists[1]],face(true));
   }
   assert.equal(s.phase,2);
+  assert.ok(Number.isFinite(s.wingStart));
   step([palms[0]]);assert.equal(s.phase,2);
   step(palms);assert.equal(s.phase,3);
   for(let i=0;i<45;i++)step([fists[0]]);

@@ -67,7 +67,7 @@ const DreamGestures = (() => {
       this.peaks=[0,0];this.lastPeak=-Infinity;this.groups=new Map();this.frame=null;
       this.frameSeen=-Infinity;this.frameSince=null;this.texture=-1;this.frames=0;
       this.closedAt=this.claspAt=-Infinity;this.face=null;
-      this.wingTurnAt=this.wingLastHand=-Infinity;this.flashAt=Infinity;this.endPalms=false;this.neutralAt=null;
+      this.wingTurnAt=this.wingLastHand=-Infinity;this.wingStart=null;this.flashAt=Infinity;this.endPalms=false;this.neutralAt=null;
       this.handFrameStreak=0;this.lastHandFrame=-Infinity;this.lastDual=-Infinity;this.dualSamples=0;this.lastCard=-Infinity;
     }
     enter(phase,t,reason) {
@@ -185,13 +185,16 @@ const DreamGestures = (() => {
         if(clasp&&t-this.closedAt<250){
           const anchors=face?[...hands,{label:'face',center:face,scale:face.width}]:hands;
           this.updateOrbit(anchors);
+          if([...this.orbit.values()].some(m=>m.travel>7)&&this.wingStart===null){
+            this.wingStart=t;this.reason='闭眼捏合转动，羽翼展开';
+          }
           if(this.orbitDone)this.wingTurnAt=t;
         }else if(!this.orbitDone&&t-Math.min(this.closedAt,this.claspAt)>420||
           t-this.wingTurnAt>5200&&this.orbitDone){
-          this.orbit.clear();this.orbitDone=false;
+          this.orbit.clear();this.orbitDone=false;this.wingStart=null;
         }
         if(this.orbitDone&&framedPalms.length===2){
-          this.enter(3,t,'转圈后双掌张开，羽翼保持至手指出画');
+          this.enter(3,t,'双掌张开，白蒙背景保持至手指出画');
           this.wingLastHand=t;
           this.orbit.clear();this.orbitDone=false;
         }

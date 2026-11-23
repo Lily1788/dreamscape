@@ -241,10 +241,8 @@ const DreamEffects = (() => {
     }
     wing(s,t) {
       const {ctx,w,h}=this, image=get('wing-cutout'),f=s.face;
-      const a=clamp((t-s.entered)/440,0,1)*(1-clamp((t-s.flashAt+280)/280,0,1));
-      ctx.save();ctx.globalAlpha=a;
-      ctx.fillStyle='#45689bbf';ctx.fillRect(0,0,w,h);
-      ctx.fillStyle=radial(ctx,w*.49,h*.45,w*.69,'#b0c7ee59','#252d5ea5');ctx.fillRect(0,0,w,h);
+      if(s.wingStart===null)return;
+      ctx.save();ctx.globalAlpha=clamp((t-s.wingStart)/310,0,1);
       if(image&&f){
         const size=clamp(f.width*2.5,w*.19,w*.43);
         for(const sign of [-1,1]){
@@ -254,6 +252,16 @@ const DreamEffects = (() => {
         }
       }
       ctx.restore();
+    }
+    whiteBackdrop(s,t) {
+      const {ctx,w,h}=this;
+      const rise=clamp((t-s.entered)/260,0,1);
+      const fall=1-clamp((t-s.flashAt+280)/280,0,1);
+      if(rise*fall===0)return;
+      ctx.save();ctx.globalAlpha=rise*fall;
+      ctx.fillStyle='#f1f3f2cf';ctx.fillRect(0,0,w,h);
+      ctx.fillStyle=radial(ctx,w*.5,h*.45,w*.55,'#fff9','#edf3f620');
+      ctx.fillRect(0,0,w,h);ctx.restore();
     }
     print(s,t,matte,fit,mirror) {
       const {ctx,w,h}=this, elapsed=t-s.flashAt;
@@ -509,7 +517,8 @@ const DreamEffects = (() => {
         if(s.phase===2&&s.ripples.length){
           if(!this.refract?.(ctx,this.room,s.ripples,t)) this.refractFallback(s.ripples,t);
         }
-        if(s.phase===3)this.wing(s,t);
+        if(s.phase===2)this.wing(s,t);
+        if(s.phase===3)this.whiteBackdrop(s,t);
         if(s.phase===8)this.fragments(s,t);
       };
       const handBackground=[1,5].includes(s.phase);
