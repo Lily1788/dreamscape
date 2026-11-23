@@ -54,7 +54,7 @@ test('single-finger tap produces one fixed ripple; similar poses and holding do 
   assert.equal(s.ripples.length,1);
   tap(734,296,'right');assert.equal(s.ripples.length,2);assert.equal(s.ripples[1].x,707);
 });
-test('wings appear during the closed-eye turn, and two palms switch to mist until fingers leave',()=>{
+test('wings appear during closed-eye turning; original reveal waits for two open palms',()=>{
   const {s,step,now}=setup();s.enter(2,0,'');
   const fists=[[373,285,'fist'],[596,285,'fist','right']];
   const palms=[[373,285,'palm'],[596,285,'palm','right']];
@@ -64,17 +64,32 @@ test('wings appear during the closed-eye turn, and two palms switch to mist unti
     const a=i*.19;
     step([[373+20*Math.cos(a),285+20*Math.sin(a),'fist'],fists[1]],face(true));
   }
-  assert.equal(s.phase,2);
-  assert.ok(Number.isFinite(s.wingStart));
+  assert.equal(s.phase,2);assert.ok(Number.isFinite(s.wingStart));
   step([palms[0]]);assert.equal(s.phase,2);
   step(palms);assert.equal(s.phase,3);
+  assert.equal(s.flashAt,now()+260);
   for(let i=0;i<45;i++)step([fists[0]]);
-  assert.equal(s.flashAt,Infinity);
-  step([],face(),120);assert.equal(s.flashAt,Infinity);
-  step([fists[0]]);assert.equal(s.flashAt,Infinity);
-  step([],face(),280);assert.ok(Number.isFinite(s.flashAt));
-  step([],face(),1100);
-  assert.equal(s.phase,4);assert.ok(now()-s.flashAt>=720);
+  assert.equal(s.phase,3);assert.equal(s.revealExitAt,Infinity);
+  step([],face(),210);assert.equal(s.revealExitAt,Infinity);
+  step([fists[0]]);assert.equal(s.revealExitAt,Infinity);
+  step([],face(),450);assert.ok(Number.isFinite(s.revealExitAt));
+  step([],face(),310);assert.equal(s.phase,4);
+});
+test('brief dropout and hand return cannot prematurely dismiss the held reveal',()=>{
+  const {s,step}=setup();s.enter(3,0,'');s.flashAt=260;
+  step([[373,285,'fist']],face(),1000);
+  step([],face(),150);assert.equal(s.revealExitAt,Infinity);
+  step([[373,285,'fist']]);assert.equal(s.revealExitAt,Infinity);
+  step([],face(),500);assert.ok(Number.isFinite(s.revealExitAt));
+  step([[373,285,'fist']]);assert.equal(s.revealExitAt,Infinity);
+  step([],face(),500);assert.equal(s.phase,3);
+  step([],face(),310);assert.equal(s.phase,4);
+});
+test('white mist layer is absent and the final original print frame is held',()=>{
+  const effectSource=fs.readFileSync(require.resolve('../effects.js'),'utf8');
+  assert.doesNotMatch(effectSource,/whiteBackdrop/);
+  assert.match(effectSource,/elapsed=Math.min\(500,t-s.flashAt\)/);
+  assert.match(effectSource,/s\.phase===3&&t<s\.flashAt/);
 });
 test('four corners follow skewed motion and survive a dropped hand',()=>{
   const s=new Performance();s.enter(4,0,'');
