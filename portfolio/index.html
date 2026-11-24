@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101214">
+<meta name="description" content="中山大学经济学学生的个人产品作品集，收录安卓应用、动效组件与实时交互网页。">
+<title>星雨流 · 产品作品集</title>
+<style>
+:root{color-scheme:dark;--bg:#101214;--panel:#191c20;--line:#343a3f;--muted:#b0b8bd;--lime:#d8fa95}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#f4f4ec;font:16px/1.65 system-ui,"Microsoft YaHei",sans-serif}a{color:inherit}button{font:inherit;color:inherit;cursor:pointer}a:focus-visible,button:focus-visible{outline:3px solid var(--lime);outline-offset:4px}.wrap{width:min(1160px,calc(100% - 48px));margin:auto}header,footer{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:22px 0;border-bottom:1px solid var(--line)}header a{text-decoration:none}nav{display:flex;gap:clamp(12px,3vw,32px);align-items:center}nav a{color:var(--muted)}header strong{white-space:nowrap}button.lang{background:transparent;border:1px solid var(--line);border-radius:8px;padding:4px 11px}.hero{padding:clamp(50px,9vw,110px) 0 46px}.kicker,.type{font-family:ui-monospace,monospace;font-size:.86rem;letter-spacing:.1em;color:var(--lime)}h1{font-size:clamp(3rem,8.7vw,7.4rem);line-height:1.04;letter-spacing:-.07em;margin:12px 0 24px}.lede{color:var(--muted);max-width:620px;margin:0;font-size:clamp(1rem,2vw,1.2rem)}section{scroll-margin-top:20px;margin-bottom:55px}h2{margin:0 0 17px;font-size:1.35rem}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.apps{grid-template-columns:repeat(3,minmax(0,1fr))}article{background:var(--panel);border:1px solid var(--line);border-radius:21px;overflow:hidden;min-width:0}.copy{padding:21px 23px}.copy h3{margin:4px 0 6px;font-size:1.45rem;line-height:1.2}.copy p{margin:0 0 12px;color:var(--muted)}.copy p:last-child{margin-bottom:0}.action{display:inline-flex;align-items:center;min-height:44px;padding:8px 15px;color:#141812;background:var(--lime);border:0;border-radius:9px;font-weight:700;text-decoration:none}.art{height:230px;overflow:hidden;display:grid;place-items:center;position:relative;isolation:isolate}.dream{background:radial-gradient(ellipse at 50% 85%,#944f9a 0%,#2d235c 40%,#111432 80%)}.dream:before{content:"";position:absolute;inset:46% -35% -100%;background:repeating-linear-gradient(90deg,#bfb0fb80 0 1px,transparent 1px 38px),repeating-linear-gradient(#bfb0fb80 0 1px,transparent 1px 28px);transform:perspective(160px) rotateX(52deg);mask-image:linear-gradient(transparent,#000 25%);z-index:-1}.orb{width:155px;aspect-ratio:1;border-radius:50%;background:repeating-linear-gradient(0deg,transparent 0 6px,#46306875 6px 8px),linear-gradient(#fdd8eb,#b286ee 70%,#5f49ae);box-shadow:0 0 65px #e5a5fb60;transform:translateY(-14px)}.love{background:radial-gradient(ellipse at top right,#ffe1ef,#e5a3bc 65%,#ce7d9b)}.letter{width:64%;padding:22px 7px;text-align:center;color:#8f2359;background:#ffedf5;border:1px solid #fff3;border-radius:9px;transform:rotate(-8deg);box-shadow:0 16px 36px #72244237;font:italic clamp(1.9rem,4vw,3.6rem)/1.06 Georgia,serif}.letter small{font:600 .79rem system-ui;display:block;margin-bottom:9px;letter-spacing:.16em}.letter i{position:absolute;right:10px;bottom:-14px;color:#c84679;font-size:37px}.mini{height:138px;display:grid;place-items:center}.diary{background:#342d2e}.days{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;width:min(81%,230px)}.days span{display:grid;place-items:center;aspect-ratio:1;border-radius:7px;background:#ffffff0c;color:#efccc9;font-size:.75rem}.days span:nth-child(5n+1){background:#a66371}.days span:nth-child(7n+3){background:#755661}.music{background:radial-gradient(ellipse at bottom,#3e4b8c,#22243e)}.track{width:75%;display:flex;align-items:center;gap:12px;padding:12px;background:#b0bbff25;border:1px solid #b0bbff48;border-radius:18px}.album{width:45px;aspect-ratio:1;border-radius:9px;background:linear-gradient(145deg,#e1ccfc,#7656a1 55%,#282244)}.wave{flex:1;height:5px;border-radius:9px;background:linear-gradient(90deg,#e5d0ff 62%,#ffffff40 62%)}.motion{background:#242d22}.switcher{display:grid;grid-template-columns:repeat(2,1fr);position:relative;isolation:isolate;width:min(90%,240px);padding:4px;border-radius:99px;background:#101510}.switcher::before{position:absolute;content:"";width:calc(50% - 4px);inset:4px auto 4px 4px;border-radius:99px;background:var(--lime);z-index:-1;transition:transform .46s cubic-bezier(.25,.8,.2,1.29)}.switcher.second::before{transform:translateX(100%)}.switcher button{border:0;background:transparent;padding:8px 4px;border-radius:99px;min-height:44px}.switcher [aria-pressed=true]{color:#151c0d;font-weight:700}.sample{font-size:.88rem;color:var(--muted);margin:0 0 15px}footer{border-bottom:0;border-top:1px solid var(--line);color:var(--muted);font-size:.9rem;margin-top:12px}
+@media(max-width:800px){.apps{grid-template-columns:1fr}.mini{height:122px}}@media(max-width:590px){.wrap{width:calc(100% - 32px)}.grid{grid-template-columns:1fr}.art{height:185px}header{flex-wrap:wrap;gap:10px}nav{gap:14px}nav a{font-size:.88rem}.copy{padding:19px}.hero{padding-top:49px}h1{letter-spacing:-.045em}}@media(prefers-reduced-motion:reduce){*,*::before{transition:none!important}}
+</style>
+</head>
+<body><div class="wrap">
+<header><a href="./"><strong data-en="Xingyuliu">星雨流</strong></a><nav aria-label="Portfolio"><a href="#live" data-en="Live demos">在线体验</a><a href="#products" data-en="Products">产品作品</a><button class="lang" id="language" type="button" lang="en">EN</button></nav></header>
+<main>
+<div class="hero"><div class="kicker">PRODUCT PORTFOLIO</div><h1 data-en="Selected work">个人作品集</h1><p class="lede" data-en="I study economics at Sun Yat-sen University and use AI-assisted development to turn product ideas into Android apps and interactive web experiences.">中山大学经济学在读。我用 AI 协作把产品想法做成可以上手体验的安卓应用和交互网页。</p></div>
+<section id="live"><h2 data-en="Try the interactive projects">在线体验</h2>
+<p class="sample" data-en="Open a demo, allow camera access, and use your hands to interact.">打开作品并允许摄像头权限，即可用手势互动。</p>
+<div class="grid">
+<article><div class="art dream" aria-hidden="true"><div class="orb"></div></div><div class="copy"><div class="type">REAL-TIME WEB AR</div><h3>Dreamscape AR</h3><p data-en="Use your hands to reveal wireframe mountains, refract the camera image with ripples, and guide birds across the scene.">用手势展开线框山脉、在镜头画面里拨出水波，或让飞鸟跟随掌心移动。</p><a class="action" href="../?v=0.5.5" target="_blank" rel="noopener" data-en="Try Dreamscape">体验 Dreamscape</a></div></article>
+<article><div class="art love" aria-hidden="true"><div class="letter"><small>TO YOU</small>I love you<br>so much<i>♥</i></div></div><div class="copy"><div class="type">INTERACTIVE WEB</div><h3 data-en="Love at Your Fingertips">互动情书</h3><p data-en="Personalize the recipient’s name, tap virtual words and hearts with your fingertips, and record the experience.">填入收信人的名字，用指尖点亮单词和爱心、触发声音，还可以录下这封情书。</p><a class="action" href="../love-letter/?v=9404305" target="_blank" rel="noopener" data-en="Open the love letter">打开互动情书</a></div></article>
+</div></section>
+<section id="products"><h2 data-en="Product projects">产品作品</h2>
+<div class="grid apps">
+<article><div class="mini diary" aria-hidden="true"><div class="days"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span><span>13</span><span>14</span></div></div><div class="copy"><div class="type">ANDROID · SOCIAL</div><h3 data-en="Zhaoxi Diary">朝夕日记</h3><p data-en="Pair with an invite code, then record moods and short notes in a shared calendar. I tested the pairing flow across two devices and traced connectivity failures.">两人通过配对码关联，把表情和文字记进同一张心情日历。我验证了双设备配对流程，并排查了网络连接问题。</p></div></article>
+<article><div class="mini music" aria-hidden="true"><div class="track"><div class="album"></div><div class="wave"></div></div></div><div class="copy"><div class="type">ANDROID · MUSIC</div><h3>Lunaxy Music</h3><p data-en="A music player with a stacked personal-radio interface and a voice assistant. An app-wide banner follows the voice interaction from listening to the result.">音乐播放器与个人电台卡片栈。语音唤醒后，全局横幅依次显示聆听、处理和结果，减少播放时切换页面的需要。</p></div></article>
+<article><div class="mini motion"><div class="switcher" id="switcher" role="group" aria-label="FMV motion demo"><button type="button" aria-pressed="true" data-en="Browse">浏览</button><button type="button" aria-pressed="false" data-en="Saved">收藏</button></div></div><div class="copy"><div class="type">DESIGN SYSTEM · MOTION</div><h3>Fluid Motion Vault</h3><p data-en="A reusable interaction library for card stacks, cascading lists and liquid feedback. Tap the tabs above to try a small elastic-motion sample.">把卡片栈、列表逐项展开和液态反馈整理成可复用的交互动效。点击上方标签，试试弹性切换小样。</p></div></article>
+</div></section>
+</main>
+<footer><span data-en="Xingyuliu · Product portfolio">星雨流 · 产品作品集</span><a href="#" data-en="Back to top">返回顶部</a></footer>
+</div>
+<script>
+const languageButton = document.querySelector('#language');
+const translated = [...document.querySelectorAll('[data-en]')];
+for (const node of translated) node.dataset.zh = node.textContent;
+function setLanguage(english) {
+  document.documentElement.lang = english ? 'en' : 'zh-CN';
+  document.title = english ? 'Xingyuliu · Product Portfolio' : '星雨流 · 产品作品集';
+  languageButton.textContent = english ? '中文' : 'EN';
+  languageButton.lang = english ? 'zh-CN' : 'en';
+  for (const node of translated) node.textContent = english ? node.dataset.en : node.dataset.zh;
+}
+languageButton.addEventListener('click', () => setLanguage(document.documentElement.lang !== 'en'));
+setLanguage(new URLSearchParams(location.search).get('lang') === 'en');
+const switcher = document.querySelector('#switcher');
+const tabs = [...switcher.querySelectorAll('button')];
+for (const [index, tab] of tabs.entries()) {
+  tab.addEventListener('click', () => {
+    switcher.classList.toggle('second', index === 1);
+    for (const item of tabs) item.setAttribute('aria-pressed', String(item === tab));
+  });
+}
+</script>
+</body>
+</html>
